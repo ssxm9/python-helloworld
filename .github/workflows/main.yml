@@ -25,6 +25,9 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: checkout code
       uses: actions/checkout@v2
+    
+    - name: Inject slug/short variables
+      uses: rlespinasse/github-slug-action@v2.x
       
     - name: setup gcloud cli
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
