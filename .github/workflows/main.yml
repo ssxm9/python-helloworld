@@ -25,13 +25,6 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: checkout code
       uses: actions/checkout@v2
-    
-    - name: Get the version
-      id: get_tag_name
-      run: echo ::set-output name=GIT_TAG_NAME::${GITHUB_REF/refs\/tags\//}
-    
-    - name: show git-tag
-      run: ${{ steps.get_tag_name.outputs.GIT_TAG_NAME}}
       
     - name: setup gcloud cli
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
@@ -52,3 +45,20 @@ jobs:
 
     - name: push docker image
       run: docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ env.GITHUB_SHA_SHORT }}
+    
+    - name: check envs vars
+      run: |
+        echo "Slug variables"
+        echo "   ref        : ${{ env.GITHUB_REF_SLUG }}"
+        echo "   head ref   : ${{ env.GITHUB_HEAD_REF_SLUG }}"
+        echo "   base ref   : ${{ env.GITHUB_BASE_REF_SLUG }}"
+        echo "   event ref  : ${{ env.GITHUB_EVENT_REF_SLUG }}"
+        echo "   repository : ${{ env.GITHUB_REPOSITORY_SLUG }}"
+        echo "Slug URL variables"
+        echo "   ref        : ${{ env.GITHUB_REF_SLUG_URL }}"
+        echo "   head ref   : ${{ env.GITHUB_HEAD_REF_SLUG_URL }}"
+        echo "   base ref   : ${{ env.GITHUB_BASE_REF_SLUG_URL }}"
+        echo "   event ref  : ${{ env.GITHUB_EVENT_REF_SLUG_URL }}"
+        echo "   repository : ${{ env.GITHUB_REPOSITORY_SLUG_URL }}"
+        echo "Short SHA variables"
+        echo "   sha        : ${{ env.GITHUB_SHA_SHORT }}"
