@@ -25,7 +25,14 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: checkout code
       uses: actions/checkout@v2
-
+    
+    - name: Get the version
+      id: get_tag_name
+      run: echo ::set-output name=GIT_TAG_NAME::${GITHUB_REF/refs\/tags\//}
+    
+    - name: show git-tag
+      run: ${{ steps.get_tag_name.outputs.GIT_TAG_NAME}}
+      
     - name: setup gcloud cli
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
