@@ -19,15 +19,13 @@ jobs:
     env:
       PROJECT_ID: "playground-s-11-61a09026"
       SERVICE_NAME: "hello-world"
-
+      SHA7: ${GITHUB_SHA::7}
+  
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: checkout code
       uses: actions/checkout@v2
-    
-    - name: Inject slug/short variables
-      uses: rlespinasse/github-slug-action@v2.x
       
     - name: setup gcloud cli
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
@@ -41,13 +39,19 @@ jobs:
       run: gcloud info
 
     - name: build docker image
-      run: docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ env.GITHUB_SHA_SHORT }} .
+      run: docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${SHA7} .
     
     - name: configure docker to use gcloud cli
       run: gcloud auth configure-docker -q
 
     - name: push docker image
-      run: docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ env.GITHUB_SHA_SHORT }}
+      run: docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:${SHA7}
+    
+    - name: Branch name
+      run: echo running on branch ${GITHUB_REF##*/}
+    
+    - name: Inject slug/short variables
+      uses: rlespinasse/github-slug-action@v2.x
     
     - name: check envs vars
       run: |
