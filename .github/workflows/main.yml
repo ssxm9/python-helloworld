@@ -5,9 +5,9 @@ name: CI
 # Controls when the action will run.
 on:
   push:
-    branches: [ master ]
+    branches: [ master, feature/test ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, feature/test ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -17,9 +17,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PROJECT_ID: "playground-s-11-61a09026"
+      PROJECT_ID: ${{ secrets.PROJECT_ID }}
       SERVICE_NAME: "hello-world"
-      SHA7: ${GITHUB_SHA::7}
   
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -37,18 +36,19 @@ jobs:
       
     - name: check gcloud info
       run: gcloud info
+    
+    - name: set environment variable of git short sha
+      run: |
+         echo "::set-env name=GITHUB_SHA_SHORT::$(git rev-parse --short HEAD)"
 
     - name: build docker image
-      run: docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${SHA7} .
+      run: docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${GITHUB_REF#refs/heads/}-${GITHUB_SHA_SHORT} .
     
     - name: configure docker to use gcloud cli
       run: gcloud auth configure-docker -q
 
     - name: push docker image
-      run: docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:${SHA7}
-    
-    - name: Branch name
-      run: echo running on branch ${GITHUB_REF##*/}
+      run: docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:${GITHUB_REF#refs/heads/}-${GITHUB_SHA_SHORT}
     
     - name: Inject slug/short variables
       uses: rlespinasse/github-slug-action@v2.x
