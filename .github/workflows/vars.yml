@@ -24,11 +24,17 @@ jobs:
     - name: checkout code
       uses: actions/checkout@v2
       
-   # - name: check short sha
-   #   run: echo sha-${{GITHUB_SHA::7}}
-   
+    - name: check branch
+      id: vars
+      run: |
+        echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        
+    - name: verify branch
+      run: |
+        echo "Branch: ${{ steps.vars.outputs.branch }}"
+           
     - name: versioning
-      if: GITHUB_REF##*/ == 'feature/**'
+      if: (contains(steps.vars.outputs.branch, 'feature/**')
       run: |
         echo "::set-env name=VERSION::$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//-/')"
         echo ${{ env.VERSION }}
@@ -42,15 +48,6 @@ jobs:
       run: |
          x=echo $COMMIT | cut -b -7
          echo $x
-    
-    - name: check branch
-      id: vars
-      run: |
-        echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        
-    - name: verify branch
-      run: |
-        echo "Branch: ${{ steps.vars.outputs.branch }}"
       
     - name: test
       run: echo "${GITHUB_REF#refs/heads/}"
