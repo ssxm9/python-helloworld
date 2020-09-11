@@ -43,7 +43,7 @@ jobs:
    #   run: echo "::set-env name=VERSION::$(echo ${GITHUB_REF##*/})"
 
     - name: create versioning
-      if: env.BRANCH == 'feature/**'
+      if: env.BRANCH == 'feature/test'
       run: |
         echo "::set-env name=VERSION::$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//-/')"
     
