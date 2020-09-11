@@ -34,7 +34,7 @@ jobs:
         echo "Branch: ${{ steps.vars.outputs.branch }}"
            
     - name: versioning
-      if: (contains(steps.vars.outputs.branch, 'feature/**')
+      if: (contains(steps.vars.outputs.branch, 'feature/**'))
       run: |
         echo "::set-env name=VERSION::$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//-/')"
         echo ${{ env.VERSION }}
