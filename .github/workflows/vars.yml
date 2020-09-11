@@ -43,7 +43,8 @@ jobs:
         echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         
     - name: verify branch
-      run: echo "Branch: ${{ steps.vars.outputs.branch }}"
+      run: |
+        echo "Branch: ${{ steps.vars.outputs.branch }}"
       
     - name: test
       run: echo "${GITHUB_REF#refs/heads/}"
