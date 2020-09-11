@@ -28,7 +28,7 @@ jobs:
    #   run: echo sha-${{GITHUB_SHA::7}}
    
     - name: versioning
-      if: $(echo ${GITHUB_REF#refs/heads/}) == 'feature/**'
+      if: refs/heads == 'feature/**'
       run: |
         echo "::set-env name=VERSION::$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//-/')"
         echo ${{ env.VERSION }}
