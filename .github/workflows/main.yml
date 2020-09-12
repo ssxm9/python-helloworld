@@ -35,7 +35,8 @@ jobs:
     - name: Activate Service Account 
       run: |
         echo "$SERVICE_ACCOUNT_KEY" > "$HOME"/gcloud.json
-        sh -c "gcloud auth activate-service-account --key-file=$HOME/gcloud.json $*"
+        sh -c "gcloud auth activate-service-account --key-file=$HOME/gcloud.json"
+        sh -c "gcloud config set project $PROJECT_ID"
       
     - name: check gcloud info
       run: gcloud info
