@@ -75,9 +75,13 @@ jobs:
            
     - name: build docker image
       run: |
-        for tag in { ${BRANCH_TAG}-${GITHUB_SHA_SHORT},${BRANCH_TAG} };
+        docker build -t hello-world .
+    
+    - name: tag docker image
+      run: |
+        for TAG in { ${BRANCH_TAG}-${GITHUB_SHA_SHORT},${BRANCH_TAG} };
         do
-          docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${TAG} .
+          docker tag hello-world gcr.io/$PROJECT_ID/$SERVICE_NAME:${TAG}
         done
     
     - name: configure docker to use gcloud cli
