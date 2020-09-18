@@ -74,13 +74,21 @@ jobs:
         echo ${BRANCH_TAG}
            
     - name: build docker image
-      run: docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${BRANCH_TAG}-${GITHUB_SHA_SHORT} -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${BRANCH_TAG} .
+      run: |
+        for tag in { ${BRANCH_TAG}-${GITHUB_SHA_SHORT},${BRANCH_TAG} };
+        do
+          docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${TAG} .
+        done
     
     - name: configure docker to use gcloud cli
       run: gcloud auth configure-docker -q
 
     - name: push docker image
-      run: docker push gcr.io/$PROJECT_ID/$SERVICE_NAME
+      run: |
+         for tag in { ${BRANCH_TAG}-${GITHUB_SHA_SHORT},${BRANCH_TAG} };
+         do
+          docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:${TAG}
+         done
     
     - name: Inject slug/short variables
       uses: rlespinasse/github-slug-action@v2.x
