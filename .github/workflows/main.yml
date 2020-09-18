@@ -5,9 +5,8 @@ name: CI
 # Controls when the action will run.
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches: [ master, feature/**, develop, qa, mock_prod, prod]
+
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -17,39 +16,75 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PROJECT_ID: "playground-s-11-61a09026"
+      PROJECT_ID: 'playground-s-11-c6acadd0'
       SERVICE_NAME: "hello-world"
-      SHA7: ${GITHUB_SHA::7}
   
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: checkout code
       uses: actions/checkout@v2
-      
-    - name: setup gcloud cli
-      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-      with:
-        version: '290.0.1'
-        project_id: 'playground-s-11-cf7b54f7'
-        service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-        export_default_credentials: true
-      
+    
+  #  - run: echo "::set-env name=SERVICE_ACCOUNT_KEY::${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}"
+        
+    - name: Activate Service Account 
+      env: 
+        SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+      run: |
+        echo "$SERVICE_ACCOUNT_KEY" > ${HOME}/gcloud.json
+        gcloud --quiet auth activate-service-account --key-file=${HOME}/gcloud.json --project=$PROJECT_ID
+ #       gcloud auth configure-docker
+    
     - name: check gcloud info
       run: gcloud info
-
+    
+    - name: set environment variable of git short sha
+      run: |
+         echo "::set-env name=GITHUB_SHA_SHORT::$(git rev-parse --short HEAD)"
+         
+    - name: set docker tag
+      run: |
+        if [ ${GITHUB_REF#refs/heads/} == develop ];
+         then
+          echo ::set-env name=BRANCH_TAG::dev
+          
+        elif [ ${GITHUB_REF#refs/heads/} == qa ];
+         then
+          echo ::set-env name=BRANCH_TAG::qa
+        
+        elif [ ${GITHUB_REF#refs/heads/} == mock_prod ];
+         then
+          echo ::set-env name=BRANCH_TAG::mck_prd
+          
+        elif [ ${GITHUB_REF#refs/heads/} == master ];
+         then
+          echo ::set-env name=BRANCH_TAG::master
+          
+        elif [ ${GITHUB_REF#refs/heads/} == feature/** ];
+         then
+           TMP=$(echo $GITHUB_REF#refs/heads/ | sed 's/\//-/')
+           echo ::set-env name=BRANCH_TAG::$(TMP)
+         
+        else
+          merge to correct branch
+        fi
+        
+    - name: check branch tags
+      run: |
+        echo ${BRANCH_TAG}
+           
     - name: build docker image
-      run: docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${SHA7} .
+      run: |
+        docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${BRANCH_TAG} \
+                     -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${BRANCH_TAG}-${GITHUB_SHA_SHORT} .
     
     - name: configure docker to use gcloud cli
       run: gcloud auth configure-docker -q
 
     - name: push docker image
-      run: docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:${SHA7}
-    
-    - name: Branch name
-      run: echo running on branch ${GITHUB_REF##*/}
-    
+      run: |
+        docker push gcr.io/$PROJECT_ID/$SERVICE_NAME
+         
     - name: Inject slug/short variables
       uses: rlespinasse/github-slug-action@v2.x
     
