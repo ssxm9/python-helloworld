@@ -79,7 +79,7 @@ jobs:
     
     - name: tag docker image
       run: |
-        for TAG in { ${BRANCH_TAG}-${GITHUB_SHA_SHORT},${BRANCH_TAG} };
+        for TAG in ${BRANCH_TAG}-${GITHUB_SHA_SHORT} ${BRANCH_TAG};
         do
           docker tag hello-world gcr.io/$PROJECT_ID/$SERVICE_NAME:${TAG}
         done
@@ -89,7 +89,7 @@ jobs:
 
     - name: push docker image
       run: |
-         for tag in { ${BRANCH_TAG}-${GITHUB_SHA_SHORT},${BRANCH_TAG} };
+         for tag in ${BRANCH_TAG}-${GITHUB_SHA_SHORT},${BRANCH_TAG};
          do
           docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:${TAG}
          done
