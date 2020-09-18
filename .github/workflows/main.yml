@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PROJECT_ID: 'playground-s-11-b525daf3'
+      PROJECT_ID: 'playground-s-11-c6acadd0'
       SERVICE_NAME: "hello-world"
   
     # Steps represent a sequence of tasks that will be executed as part of the job
