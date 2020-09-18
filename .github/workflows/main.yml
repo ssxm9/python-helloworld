@@ -63,10 +63,11 @@ jobs:
         elif [ ${GITHUB_REF#refs/heads/} == feature/** ];
          then
            TMP=$(echo $GITHUB_REF#refs/heads/ | sed 's/\//-/')
-          echo ::set-env name=BRANCH_TAG::$(TMP)
+           echo ::set-env name=BRANCH_TAG::$(TMP)
          
         else
           merge to correct branch
+        fi
         
     - name: check branch tags
       run: |
