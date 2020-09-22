@@ -67,13 +67,13 @@ jobs:
          then
           echo ::set-env name=BRANCH_TAG::master
           
-        elif [ ${GITHUB_REF#refs/heads/} | cut -c 1-7 == feature ];
+        elif [[ `echo ${GITHUB_REF#refs/heads/} | cut -c 1-7` == feature ]];
          then
            TMP=$(echo $GITHUB_REF#refs/heads/ | sed 's/\//-/')
-           echo ::set-env name=BRANCH_TAG::$(TMP)
+           echo ::set-env name=BRANCH_TAG::${TMP}
          
         else
-          merge to correct branch
+          echo "merge to correct branch"
         fi
         
     - name: check branch tags
