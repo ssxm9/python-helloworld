@@ -33,6 +33,7 @@ jobs:
       run: |
         echo "$SERVICE_ACCOUNT_KEY" > ${HOME}/gcloud.json
         gcloud --quiet auth activate-service-account --key-file=${HOME}/gcloud.json --project=$PROJECT_ID
+      continue-on-error: true
  #       gcloud auth configure-docker
     
     - name: check gcloud info
