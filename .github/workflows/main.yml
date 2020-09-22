@@ -48,6 +48,9 @@ jobs:
          
     - name: set docker tag
       run: |
+        TAG_BRANCH=${GITHUB_REF#refs/heads/}
+        echo $TAG_BRANCH
+        
         if [ ${GITHUB_REF#refs/heads/} == develop ];
          then
           echo ::set-env name=BRANCH_TAG::dev
@@ -64,9 +67,9 @@ jobs:
          then
           echo ::set-env name=BRANCH_TAG::master
           
-        elif [[ `echo "${GITHUB_REF#refs/heads/}" | cut -c 1-7` == feature ]];
+        elif [[ `echo ${GITHUB_REF#refs/heads/} | cut -c 1-7` == feature ]];
          then
-           TMP=$(echo "$GITHUB_REF#refs/heads/" | sed 's/\//-/')
+           TMP=$(`echo ${GITHUB_REF#refs/heads/} | sed 's/\//-/'`)
            echo ::set-env name=BRANCH_TAG::${TMP}
          
         else
@@ -108,3 +111,6 @@ jobs:
         echo "   repository : ${{ env.GITHUB_REPOSITORY_SLUG_URL }}"
         echo "Short SHA variables"
         echo "   sha        : ${{ env.GITHUB_SHA_SHORT }}"
+        
+        
+        
