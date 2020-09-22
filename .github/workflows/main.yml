@@ -38,7 +38,7 @@ jobs:
     - name: check gcloud info
       run: gcloud info
     
-    - name: set environment variable of git short sha
+    - name: set environment variable for git short sha
       run: |
          echo "::set-env name=GITHUB_SHA_SHORT::$(git rev-parse --short HEAD)"
    
@@ -47,10 +47,37 @@ jobs:
         CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
         echo ${CURRENT_BRANCH::7}
         
-    - name: docker tag for develop branch
+    - name: env variables for develop branch
       if: github.ref == 'refs/heads/develop'
       run: |
         echo ::set-env name=BRANCH_TAG::dev
+        
+    - name: env variables for qa branch
+      if: github.ref == 'refs/heads/qa'
+      run: |
+        echo ::set-env name=BRANCH_TAG::qa
+        
+    - name: env variables for mock-prod branch
+      if: github.ref == 'refs/heads/mock-prod'
+      run: |
+        echo ::set-env name=BRANCH_TAG::mck-prd
+        
+    - name: env variables for prod branch
+      if: github.ref == 'refs/heads/prod'
+      run: |
+        echo ::set-env name=BRANCH_TAG::prd
+    
+    - name: env variables for feature branch
+      run: |
+        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+        if [ `echo ${CURRENT_BRANCH::7}` == feature ];
+         then
+           FEATURE_TAG=$(echo $CURRENT_BRANCH | sed 's/\//-/')
+           echo ::set-env name=BRANCH_TAG::${FEATURE_TAG}
+         
+        else
+          echo "merge to correct branch"
+        fi
         
     - name: check branch tags
       run: |
