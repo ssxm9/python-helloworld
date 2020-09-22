@@ -43,7 +43,9 @@ jobs:
          echo "::set-env name=GITHUB_SHA_SHORT::$(git rev-parse --short HEAD)"
    
     - name: check branch
-      run: echo "${GITHUB_REF#refs/heads/}"
+      run: |
+        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+        echo ${CURRENT_BRANCH::7}
          
     - name: set docker tag
       run: |
