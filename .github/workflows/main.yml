@@ -46,7 +46,15 @@ jobs:
       run: |
         CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
         echo ${CURRENT_BRANCH::7}
-         
+    
+    - name: docker tag for feature branch
+      if: startsWith(GITHUB_REF#refs/heads/, 'feature')
+      run: |
+        echo ${GITHUB_REF#refs/heads/}
+        FEATURE_TAG=$(echo $CURRENT_BRANCH | sed 's/\//-/')
+        echo $FEATURE_TAG
+        echo ::set-env name=BRANCH_TAG::${FEATURE_TAG}
+        
     - name: set docker tag
       run: |
         CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
