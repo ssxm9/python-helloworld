@@ -45,9 +45,6 @@ jobs:
    
     - name: check branch
       run: echo "${GITHUB_REF#refs/heads/}"
-    
-    - name: get 1st 7 letters
-      run: echo "${GITHUB_REF#refs/heads/::7}"
          
     - name: set docker tag
       run: |
@@ -67,9 +64,9 @@ jobs:
          then
           echo ::set-env name=BRANCH_TAG::master
           
-        elif [[ `echo ${GITHUB_REF#refs/heads/} | cut -c 1-7` == feature ]];
+        elif [[ `echo "${GITHUB_REF#refs/heads/}" | cut -c 1-7` == feature ]];
          then
-           TMP=$(echo $GITHUB_REF#refs/heads/ | sed 's/\//-/')
+           TMP=$(echo "$GITHUB_REF#refs/heads/" | sed 's/\//-/')
            echo ::set-env name=BRANCH_TAG::${TMP}
          
         else
