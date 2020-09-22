@@ -59,9 +59,9 @@ jobs:
          then
           echo ::set-env name=BRANCH_TAG::qa
         
-        elif [ $CURRENT_BRANCH == mock_prod ];
+        elif [ $CURRENT_BRANCH == mock-prod ];
          then
-          echo ::set-env name=BRANCH_TAG::mck_prd
+          echo ::set-env name=BRANCH_TAG::mck-prd
           
         elif [ $CURRENT_BRANCH == prod ];
          then
