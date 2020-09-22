@@ -69,7 +69,7 @@ jobs:
           
         elif [[ `echo ${GITHUB_REF#refs/heads/} | cut -c 1-7` == feature ]];
          then
-           TMP=$(echo $TAG_BRANCH | sed 's/\//-/'`)
+           TMP=$(echo $TAG_BRANCH | sed 's/\//-/')
            echo ::set-env name=BRANCH_TAG::${TMP}
          
         else
