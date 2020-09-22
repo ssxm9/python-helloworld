@@ -7,7 +7,6 @@ on:
   push:
     branches: [ master, feature/**, develop, qa, mock_prod, prod]
 
-
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -48,27 +47,27 @@ jobs:
          
     - name: set docker tag
       run: |
-        TAG_BRANCH=${GITHUB_REF#refs/heads/}
+        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
         
-        if [ $TAG_BRANCH == develop ];
+        if [ $CURRENT_BRANCH == develop ];
          then
           echo ::set-env name=BRANCH_TAG::dev
           
-        elif [ $TAG_BRANCH == qa ];
+        elif [ $CURRENT_BRANCH == qa ];
          then
           echo ::set-env name=BRANCH_TAG::qa
         
-        elif [ $TAG_BRANCH == mock_prod ];
+        elif [ $CURRENT_BRANCH == mock_prod ];
          then
           echo ::set-env name=BRANCH_TAG::mck_prd
           
-        elif [ $TAG_BRANCH == master ];
+        elif [ $CURRENT_BRANCH == master ];
          then
           echo ::set-env name=BRANCH_TAG::master
           
-        elif [[ `echo $TAG_BRANCH | cut -c 1-7` == feature ]];
+        elif [[ `echo $CURRENT_BRANCH | cut -c 1-7` == feature ]];
          then
-           TMP=$(echo $TAG_BRANCH | sed 's/\//-/')
+           TMP=$(echo $CURRENT_BRANCH | sed 's/\//-/')
            echo ::set-env name=BRANCH_TAG::${TMP}
          
         else
@@ -93,6 +92,3 @@ jobs:
          
     - name: Inject slug/short variables
       uses: rlespinasse/github-slug-action@v2.x
-  
-        
-        
