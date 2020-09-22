@@ -49,25 +49,24 @@ jobs:
     - name: set docker tag
       run: |
         TAG_BRANCH=${GITHUB_REF#refs/heads/}
-        echo $TAG_BRANCH
         
-        if [ ${GITHUB_REF#refs/heads/} == develop ];
+        if [ $TAG_BRANCH == develop ];
          then
           echo ::set-env name=BRANCH_TAG::dev
           
-        elif [ ${GITHUB_REF#refs/heads/} == qa ];
+        elif [ $TAG_BRANCH == qa ];
          then
           echo ::set-env name=BRANCH_TAG::qa
         
-        elif [ ${GITHUB_REF#refs/heads/} == mock_prod ];
+        elif [ $TAG_BRANCH == mock_prod ];
          then
           echo ::set-env name=BRANCH_TAG::mck_prd
           
-        elif [ ${GITHUB_REF#refs/heads/} == master ];
+        elif [ $TAG_BRANCH == master ];
          then
           echo ::set-env name=BRANCH_TAG::master
           
-        elif [[ `echo ${GITHUB_REF#refs/heads/} | cut -c 1-7` == feature ]];
+        elif [[ `echo $TAG_BRANCH | cut -c 1-7` == feature ]];
          then
            TMP=$(echo $TAG_BRANCH | sed 's/\//-/')
            echo ::set-env name=BRANCH_TAG::${TMP}
@@ -94,23 +93,6 @@ jobs:
          
     - name: Inject slug/short variables
       uses: rlespinasse/github-slug-action@v2.x
-    
-    - name: check envs vars
-      run: |
-        echo "Slug variables"
-        echo "   ref        : ${{ env.GITHUB_REF_SLUG }}"
-        echo "   head ref   : ${{ env.GITHUB_HEAD_REF_SLUG }}"
-        echo "   base ref   : ${{ env.GITHUB_BASE_REF_SLUG }}"
-        echo "   event ref  : ${{ env.GITHUB_EVENT_REF_SLUG }}"
-        echo "   repository : ${{ env.GITHUB_REPOSITORY_SLUG }}"
-        echo "Slug URL variables"
-        echo "   ref        : ${{ env.GITHUB_REF_SLUG_URL }}"
-        echo "   head ref   : ${{ env.GITHUB_HEAD_REF_SLUG_URL }}"
-        echo "   base ref   : ${{ env.GITHUB_BASE_REF_SLUG_URL }}"
-        echo "   event ref  : ${{ env.GITHUB_EVENT_REF_SLUG_URL }}"
-        echo "   repository : ${{ env.GITHUB_REPOSITORY_SLUG_URL }}"
-        echo "Short SHA variables"
-        echo "   sha        : ${{ env.GITHUB_SHA_SHORT }}"
-        
+  
         
         
