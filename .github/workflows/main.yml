@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PROJECT_ID: 'playground-s-11-c5651105'
+      PROJECT_ID: 'playground-s-11-388bde46'
       SERVICE_NAME: "hello-world"
   
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -47,11 +47,11 @@ jobs:
         CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
         echo ${CURRENT_BRANCH::7}
 
-    - name: env variables for develop branch
-      if: github.ref == 'refs/heads/develop'
-      run: |
-        echo ::set-env name=BRANCH_TAG::dev
-        
+    #- name: env variables for develop branch
+    #  if: github.ref == 'refs/heads/develop'
+    #  run: |
+    #    echo ::set-env name=BRANCH_TAG::dev
+    #    
     #- name: env variables for qa branch
     #  if: github.ref == 'refs/heads/qa'
     #  run: |
