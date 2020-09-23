@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PROJECT_ID: 'playground-s-11-c5651105'
+      PROJECT_ID: 'playground-s-11-388bde46'
       SERVICE_NAME: "hello-world"
   
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -32,7 +32,7 @@ jobs:
       run: |
         echo "$SERVICE_ACCOUNT_KEY" > ${HOME}/gcloud.json
         gcloud --quiet auth activate-service-account --key-file=${HOME}/gcloud.json --project=$PROJECT_ID
-      continue-on-error: true
+ #     continue-on-error: true
  #       gcloud auth configure-docker
     
     - name: check gcloud info
@@ -46,8 +46,41 @@ jobs:
       run: |
         CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
         echo ${CURRENT_BRANCH::7}
+
+    #- name: env variables for develop branch
+    #  if: github.ref == 'refs/heads/develop'
+    #  run: |
+    #    echo ::set-env name=BRANCH_TAG::dev
+    #    
+    #- name: env variables for qa branch
+    #  if: github.ref == 'refs/heads/qa'
+    #  run: |
+    #    echo ::set-env name=BRANCH_TAG::qa
+    #    
+    #- name: env variables for mock-prod branch
+    #  if: github.ref == 'refs/heads/mock-prod'
+    #  run: |
+    #    echo ::set-env name=BRANCH_TAG::mck-prd
+    #    
+    #- name: env variables for prod branch
+    #  if: github.ref == 'refs/heads/prod'
+    #  run: |
+    #    echo ::set-env name=BRANCH_TAG::prd
+    #
+    #- name: env variables for feature branch
+    #  run: |
+    #    CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+    #    if [ `echo ${CURRENT_BRANCH::7}` == feature ];
+    #     then
+    #       FEATURE_TAG=$(echo $CURRENT_BRANCH | sed 's/\//-/')
+    #       echo ::set-env name=BRANCH_TAG::${FEATURE_TAG}
+    #     
+    #    else
+    #      echo "merge to correct branch"
+    #    fi
+        
          
-    - name: set docker tag
+    - name: set env variables for all environment
       run: |
         CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
         
@@ -91,6 +124,3 @@ jobs:
     - name: push docker image
       run: |
         docker push gcr.io/$PROJECT_ID/$SERVICE_NAME
-         
-    - name: Inject slug/short variables
-      uses: rlespinasse/github-slug-action@v2.x
