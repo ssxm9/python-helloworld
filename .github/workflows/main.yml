@@ -15,8 +15,9 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PROJECT_ID: 'playground-s-11-0592b526'
       SERVICE_NAME: "hello-world"
+      DEV_PROJECT_ID: ""
+      PROD_PROJECT_ID: ""
   
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -24,11 +25,66 @@ jobs:
     - name: checkout code
       uses: actions/checkout@v2
     
-  #  - run: echo "::set-env name=SERVICE_ACCOUNT_KEY::${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}"
+    - name: set env variables for all environment
+      env: 
+        DEV_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        PROD_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY_PROD }}
+      run: |
+        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+        
+        if [ $CURRENT_BRANCH == develop ];
+         then
+          echo ::set-env name=BRANCH_TAG::dev
+          echo $DEV_PROJECT_ID
+          echo ::set-env name=PROJECT_ID::${DEV_PROJECT_ID}
+          echo $DEV_SERVICE_ACCOUNT_KEY
+          echo ::set-env name=SERVICE_ACCOUNT_KEY::${DEV_SERVICE_ACCOUNT_KEY}
+          
+        elif [ `echo ${CURRENT_BRANCH::7}` == feature ];
+         then
+           FEATURE_TAG=$(echo $CURRENT_BRANCH | sed 's/\//-/')
+           echo ::set-env name=BRANCH_TAG::${FEATURE_TAG}
+           echo $DEV_PROJECT_ID
+           echo ::set-env name=PROJECT_ID::${DEV_PROJECT_ID}
+           echo $DEV_SERVICE_ACCOUNT_KEY
+           echo ::set-env name=SERVICE_ACCOUNT_KEY::${DEV_SERVICE_ACCOUNT_KEY}
+          
+        elif [ $CURRENT_BRANCH == qa ];
+         then
+          echo ::set-env name=BRANCH_TAG::qa
+          echo $DEV_PROJECT_ID
+          echo ::set-env name=PROJECT_ID::${DEV_PROJECT_ID}
+          echo $DEV_SERVICE_ACCOUNT_KEY
+          echo ::set-env name=SERVICE_ACCOUNT_KEY::${DEV_SERVICE_ACCOUNT_KEY}
+        
+        elif [ $CURRENT_BRANCH == mock-prod ];
+         then
+          echo ::set-env name=BRANCH_TAG::mck-prd
+          echo $DEV_PROJECT_ID
+          echo ::set-env name=PROJECT_ID::${DEV_PROJECT_ID}
+          echo $DEV_SERVICE_ACCOUNT_KEY
+          echo ::set-env name=SERVICE_ACCOUNT_KEY::${DEV_SERVICE_ACCOUNT_KEY}
+          
+        elif [ $CURRENT_BRANCH == prod ];
+         then
+          echo ::set-env name=BRANCH_TAG::prd
+          echo $PROD_PROJECT_ID
+          echo ::set-env name=PROJECT_ID::${PROD_PROJECT_ID}
+          echo $DEV_SERVICE_ACCOUNT_KEY
+          echo ::set-env name=SERVICE_ACCOUNT_KEY::${DEV_SERVICE_ACCOUNT_KEY}
+         
+        else
+          echo "merge to correct branch"
+        fi
+                
+    - name: check branch tags
+      run: |
+        echo ${HOME}
+        echo ${BRANCH_TAG}
+        echo ${PROJECT_ID}
+        echo ${SERVICE_ACCOUNT_KEY}
         
     - name: Activate Service Account 
-      env: 
-        SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
       run: |
         echo "$SERVICE_ACCOUNT_KEY" > ${HOME}/gcloud.json
         gcloud --quiet auth activate-service-account --key-file=${HOME}/gcloud.json --project=$PROJECT_ID
@@ -79,39 +135,6 @@ jobs:
     #      echo "merge to correct branch"
     #    fi
         
-         
-    - name: set env variables for all environment
-      run: |
-        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
-        
-        if [ $CURRENT_BRANCH == develop ];
-         then
-          echo ::set-env name=BRANCH_TAG::dev
-          
-        elif [ $CURRENT_BRANCH == qa ];
-         then
-          echo ::set-env name=BRANCH_TAG::qa
-        
-        elif [ $CURRENT_BRANCH == mock-prod ];
-         then
-          echo ::set-env name=BRANCH_TAG::mck-prd
-          
-        elif [ $CURRENT_BRANCH == prod ];
-         then
-          echo ::set-env name=BRANCH_TAG::prd
-          
-        elif [ `echo ${CURRENT_BRANCH::7}` == feature ];
-         then
-           FEATURE_TAG=$(echo $CURRENT_BRANCH | sed 's/\//-/')
-           echo ::set-env name=BRANCH_TAG::${FEATURE_TAG}
-         
-        else
-          echo "merge to correct branch"
-        fi
-                
-    - name: check branch tags
-      run: |
-        echo ${BRANCH_TAG}
            
     - name: build docker image
       run: |
