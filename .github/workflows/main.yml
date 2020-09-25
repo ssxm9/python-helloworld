@@ -13,18 +13,18 @@ jobs:
   test:
     
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.5]
+  #  strategy:
+  #    matrix:
+  #      python-version: [3.5]
     
     steps:
     - name: checkout code
       uses: actions/checkout@v2
     
-    - name: set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
+  #  - name: set up Python ${{ matrix.python-version }}
+  #    uses: actions/setup-python@v2
+  #    with:
+  #      python-version: ${{ matrix.python-version }}
     
     - name: install dependencies
       run: |
