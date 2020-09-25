@@ -14,12 +14,18 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-  
+    - name: checkout code
+      uses: actions/checkout@v2
+      
     - name: run python lints
       run: |
+        pip install flake8
         flake8 . --max-line-length=150 --exit-zero
       
-  
+    - name: run code coverage
+      run: |
+        pip install coverage
+        coverage report -m
   
   # This workflow contains a single job called "build"
   build:
