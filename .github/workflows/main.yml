@@ -16,6 +16,10 @@ jobs:
     steps:
     - name: checkout code
       uses: actions/checkout@v2
+    
+    - name: install requirements
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
       
     - name: run python lints
       run: |
