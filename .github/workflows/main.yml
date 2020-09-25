@@ -112,6 +112,10 @@ jobs:
     - name: check branch tags
       run: |
         echo ${BRANCH_TAG}
+        
+    - name: enable docker cache
+      uses: satackey/action-docker-layer-caching@v0.0.8
+      continue-on-error: true
            
     - name: build docker image
       run: |
