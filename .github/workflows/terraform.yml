@@ -43,7 +43,6 @@ jobs:
        echo "tf dir - ${tf_actions_working_dir}"
        echo "current dir - `pwd`"
        echo "list files - `ls`"
-
     - name: terraform fmt
       id: fmt
       run: terraform fmt -check
@@ -61,32 +60,6 @@ jobs:
       id: plan
       run: terraform plan -out=terraform.plan -var 'project_id=${PROJECT_ID}'
  #     continue-on-error: true
- 
-    - name: comment pr
-      uses: actions/github-script@0.9.0
-      if: github.event_name == 'pull_request'
-      env:
-        PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
-        script: |
-          const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-          #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-          #### Terraform Validation 🤖${{ steps.validate.outputs.stdout }}
-          #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
-      
-          <details><summary>Show Plan</summary>
-      
-          \`\`\`${process.env.PLAN}\`\`\`
-      
-          </details>
-      
-          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
-        
-          github.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: output
-          })
         
     - name: terraform apply
       if: github.event_name == 'push'
