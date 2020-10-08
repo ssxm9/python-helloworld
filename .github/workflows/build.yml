@@ -6,8 +6,8 @@ name: Docker Build and Push
 on:
   push:
     branches: [ master, feature/**, develop, qa, mock-prod, prod] 
-#    paths:
-#      - "containers/**"
+    paths:
+      - "containers/**"
 
 defaults:
   run:
