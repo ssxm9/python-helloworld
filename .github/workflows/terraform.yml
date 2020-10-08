@@ -1,0 +1,61 @@
+name: Terraform
+
+on:
+  push:
+    branches:
+      - master
+      - feature/**
+      - develop
+      - qa
+      - mock_prod
+      - prod
+    
+  pull_request:
+  
+defaults:
+  run:
+    working-directory: terraform
+  
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    
+    env:
+      PROJECT_ID: 'playground-s-11-f00d2e8b'
+    
+    steps:
+    
+    - name: checkout code
+      uses: actions/checkout@v2
+      
+    - name: activate service account 
+      env: 
+        SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+      run: |
+        echo "$SERVICE_ACCOUNT_KEY" > ${HOME}/gcloud.json
+        gcloud --quiet auth activate-service-account --key-file=${HOME}/gcloud.json --project=${PROJECT_ID}
+
+    - name: setup terraform
+      uses: hashicorp/setup-terraform@v1
+       
+    - name: terraform fmt
+      id: fmt
+      run: terraform fmt -check
+ #     continue-on-error: true
+
+    - name: terraform init
+      id: init
+      run: terraform init
+
+    - name: terraform validate
+      id: validate
+      run: terraform validate
+
+    - name: terraform plan
+      id: plan
+      run: terraform plan -out=terraform.plan -var 'project_id=${PROJECT_ID}'
+ #     continue-on-error: true
+        
+    - name: terraform apply
+      if: github.event_name == 'push'
+      run: terraform apply -auto-approve -var 'project_id=${PROJECT_ID}'
