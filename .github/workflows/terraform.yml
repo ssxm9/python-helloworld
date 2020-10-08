@@ -44,7 +44,7 @@ jobs:
          then
            project_id="playground-s-11-a285c098"
            FEATURE_TAG=$(echo $CURRENT_BRANCH | sed 's/\//-/')
-           echo "::set-env name=PROJECT_ID::${project_id}"
+           echo "::set-env name=PROJECT_ID::$project_id"
            echo ::set-env name=ENV::${FEATURE_TAG}
           
         elif [ $CURRENT_BRANCH == qa ];
