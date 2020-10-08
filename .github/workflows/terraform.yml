@@ -82,7 +82,7 @@ jobs:
       run: |
         echo "$SERVICE_ACCOUNT_KEY" > ${HOME}/gcloud.json
         gcloud --quiet auth activate-service-account --key-file=${HOME}/gcloud.json --project=${{ env.PROJECT_ID }}
-        export GOOGLE_APPLICATION_CREDENTIALS=${HOME}/gcloud.json
+        export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/gcloud.json"
 
     - name: setup terraform
       uses: hashicorp/setup-terraform@v1
