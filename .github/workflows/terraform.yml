@@ -67,7 +67,7 @@ jobs:
 
     - name: terraform plan
       id: plan
-      run: terraform plan -out=terraform.plan -var 'project_id=${PROJECT_ID}'
+      run: terraform plan -out=terraform.plan -var 'project_id=${{ secrets.GCP_PROJECT_ID }}'
  #     continue-on-error: true
         
     - name: terraform apply
