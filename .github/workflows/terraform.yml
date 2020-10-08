@@ -9,8 +9,12 @@ on:
       - qa
       - mock_prod
       - prod
+    paths:
+      - "dags/**"
     
   pull_request:
+    paths:
+      - "dags/**"
   
 defaults:
   run:
