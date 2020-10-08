@@ -17,7 +17,7 @@ defaults:
     working-directory: terraform
   
 jobs:
-  build:
+  terraform:
     runs-on: ubuntu-latest
     
     env:
@@ -33,16 +33,11 @@ jobs:
         SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
       run: |
         echo "$SERVICE_ACCOUNT_KEY" > ${HOME}/gcloud.json
-        gcloud --quiet auth activate-service-account --key-file=${HOME}/gcloud.json --project=$PROJECT_ID
+        gcloud --quiet auth activate-service-account --key-file=${HOME}/gcloud.json --project=${PROJECT_ID}
 
     - name: setup terraform
       uses: hashicorp/setup-terraform@v1
-
-    - name: check dirs
-      run: |
-       echo "tf dir - ${tf_actions_working_dir}"
-       echo "current dir - `pwd`"
-       echo "list files - `ls`"
+       
     - name: terraform fmt
       id: fmt
       run: terraform fmt -check
