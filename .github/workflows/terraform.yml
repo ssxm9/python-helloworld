@@ -10,13 +10,13 @@ on:
       - mock_prod
       - prod
     paths:
-      - '!containers/**'
-      - '!dags/**'
+      - 'terraform/**'
+      - '.github/workflows/terraform.yml'
     
   pull_request:
     paths:
-      - '!containers/**'
-      - '!dags/**'
+      - 'terraform/**'
+      - '.github/workflows/terraform.yml'
   
 defaults:
   run:
