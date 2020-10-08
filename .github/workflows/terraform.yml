@@ -10,7 +10,8 @@ on:
       - mock_prod
       - prod
     paths:
-      - "terraform/**"
+      - '!containers/**'
+      - '!dags/**'
     
   pull_request:
     paths:
