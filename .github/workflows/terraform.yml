@@ -10,11 +10,11 @@ on:
       - mock_prod
       - prod
     paths:
-      - "dags/**"
+      - "terraform/**"
     
   pull_request:
     paths:
-      - "dags/**"
+      - "terraform/**"
   
 defaults:
   run:
