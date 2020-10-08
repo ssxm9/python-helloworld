@@ -59,7 +59,7 @@ jobs:
 
     - name: terraform plan
       id: plan
-      run: terraform plan -out=terraform.plan -var 'project_id=${PROJECT_ID}
+      run: terraform plan -out=terraform.plan -var 'project_id=${PROJECT_ID}'
  #     continue-on-error: true
  
     - name: comment pr
@@ -90,4 +90,4 @@ jobs:
         
     - name: terraform apply
       if: github.event_name == 'push'
-      run: terraform apply -auto-approve -var 'project_id=${PROJECT_ID}
+      run: terraform apply -auto-approve -var 'project_id=${PROJECT_ID}'
