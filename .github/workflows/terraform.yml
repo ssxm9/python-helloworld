@@ -14,7 +14,8 @@ on:
     
   pull_request:
     paths:
-      - "terraform/**"
+      - '!containers/**'
+      - '!dags/**'
   
 defaults:
   run:
