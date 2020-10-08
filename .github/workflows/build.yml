@@ -1,13 +1,17 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Docker Build and Push
 
 # Controls when the action will run.
 on:
   push:
     branches: [ master, feature/**, develop, qa, mock-prod, prod] 
-    paths:
-      - "containers/**"
+#    paths:
+#      - "containers/**"
+
+defaults:
+  run:
+    working-directory: containers
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:

@@ -61,12 +61,13 @@ jobs:
       env: 
         SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
       run: |
-        echo "$SERVICE_ACCOUNT_KEY" | base64 --decode > ${HOME}/gcloud.json
+        echo "$SERVICE_ACCOUNT_KEY" > ${HOME}/gcloud.json
         gcloud --quiet auth activate-service-account --key-file=${HOME}/gcloud.json
            
     - name: configure gke cluster access
       run: |
         gcloud --quiet container clusters get-credentials ${CLUSTER_NAME} --zone ${ZONE} --project ${PROJECT_ID}
+
     - name: deploy dags
       run: |
         POD_NAME=`kubectl get pods --namespace=${NAMESPACE} --field-selector status.phase=Running | grep ${WEB_SERVER} | cut -d " " -f1`
