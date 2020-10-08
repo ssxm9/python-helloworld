@@ -26,29 +26,65 @@ jobs:
   terraform:
     runs-on: ubuntu-latest
     
-    env:
-      PROJECT_ID: 'playground-s-11-a285c098'
-    
     steps:
     
     - name: checkout code
       uses: actions/checkout@v2
-   
- #   - name: GCloud - Setup
- #     uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
- #     with:
- #         version: '290.0.1'
- #         project_id: ${{ secrets.GCP_PROJECT_ID }}
- #         service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
- #         export_default_credentials: true
-      
-    - name: activate service account 
-      env: 
-        SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+    
+    - name: setup env variables
       run: |
-        echo "$SERVICE_ACCOUNT_KEY" > ${HOME}/gcloud.json
-        gcloud --quiet auth activate-service-account --key-file=${HOME}/gcloud.json 
-        gcloud --quiet config set project ${{ secrets.GCP_PROJECT_ID }}
+        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+        
+        if [ $CURRENT_BRANCH == develop ];
+         then
+          echo ::set-env name=PROJECT_ID::playground-s-11-a285c098
+          echo ::set-env name=ENV::dev
+        
+        elif [ `echo ${CURRENT_BRANCH::7}` == feature ];
+         then
+           FEATURE_TAG=$(echo $CURRENT_BRANCH | sed 's/\//-/')
+           echo ::set-env name=PROJECT_ID::playground-s-11-a285c098
+           echo ::set-env name=ENV::${FEATURE_TAG}
+          
+        elif [ $CURRENT_BRANCH == qa ];
+         then
+          echo ::set-env name=PROJECT_ID::playground-s-11-a285c098
+          echo ::set-env name=ENV::qa
+
+        elif [ $CURRENT_BRANCH == mock-prod ];
+         then
+          echo ::set-env name=PROJECT_ID::playground-s-11-a285c098
+          echo ::set-env name=ENV::mck-prd
+          
+        elif [ $CURRENT_BRANCH == prod ];
+         then
+          echo ::set-env name=PROJECT_ID::playground-s-11-a285c098
+          echo ::set-env name=ENV::prd
+         
+        else
+          echo "merge to correct branch"
+        fi
+   
+    - name: check project id
+      run: |
+        echo $PROJECT_ID
+        echo $ENV
+        
+    - name: GCloud - Setup
+      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+          version: '290.0.1'
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+          export_default_credentials: true
+      
+   # - name: activate service account 
+   #   env: 
+   #     SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+   #   run: |
+   #     echo "$SERVICE_ACCOUNT_KEY" > ${HOME}/gcloud.json
+   #     gcloud --quiet auth activate-service-account --key-file=${HOME}/gcloud.json 
+   #     gcloud --quiet config set project ${{ secrets.GCP_PROJECT_ID }}
 
     - name: setup terraform
       uses: hashicorp/setup-terraform@v1
@@ -68,9 +104,9 @@ jobs:
 
     - name: terraform plan
       id: plan
-      run: terraform plan -out=terraform.plan -var 'project_id=${{ secrets.GCP_PROJECT_ID }}'
+      run: terraform plan -out=terraform.plan -var 'project_id=${PROJECT_ID}'
  #     continue-on-error: true
         
     - name: terraform apply
       if: github.event_name == 'push'
-      run: terraform apply -auto-approve -var 'project_id=${{ secrets.GCP_PROJECT_ID }}'
+      run: terraform apply -auto-approve -var 'project_id=${PROJECT_ID}'
