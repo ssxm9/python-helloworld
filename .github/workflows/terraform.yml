@@ -18,10 +18,6 @@ jobs:
     
     env:
       PROJECT_ID: 'playground-s-11-f00d2e8b'
-
-    defaults:
-      run:
-        working-directory: ${{ env.tf_actions_working_dir }}
     
     steps:
     
