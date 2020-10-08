@@ -1,4 +1,5 @@
 variable "project_id" {
-  type = string
+  type    = string
+  default = "!undefined var.project_id!"
 }
- 
+
