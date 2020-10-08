@@ -133,4 +133,4 @@ jobs:
         
     - name: terraform apply
       if: github.event_name == 'push'
-      run: terraform apply terraform.plan -auto-approve -var='project_id=${{ env.PROJECT_ID }}' -var='env=${{ env.ENV }}'
+      run: terraform apply terraform.plan -auto-approve
