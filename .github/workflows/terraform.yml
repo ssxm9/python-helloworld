@@ -35,13 +35,11 @@ jobs:
       uses: actions/checkout@v2
    
     - name: GCloud - Setup
-      env:
-        SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
           version: '290.0.1'
-          project_id: ${PROJECT_ID}
-          service_account_key: ${SERVICE_ACCOUNT_KEY}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
           export_default_credentials: true
       
 #    - name: activate service account 
