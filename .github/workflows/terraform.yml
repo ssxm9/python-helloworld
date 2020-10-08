@@ -72,4 +72,4 @@ jobs:
         
     - name: terraform apply
       if: github.event_name == 'push'
-      run: terraform apply -auto-approve -var 'project_id=${PROJECT_ID}'
+      run: terraform apply -auto-approve -var 'project_id=${{ secrets.GCP_PROJECT_ID }}'
