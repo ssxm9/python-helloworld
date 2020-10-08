@@ -12,13 +12,13 @@ on:
     
   pull_request:
   
-  paths:
-      - "terraform/**"
-
 jobs:
   build:
     runs-on: ubuntu-latest
     
+    env:
+      PROJECT_ID: 'playground-s-11-f00d2e8b'
+
     defaults:
       run:
         working-directory: ${{ env.tf_actions_working_dir }}
@@ -28,9 +28,22 @@ jobs:
     - name: checkout code
       uses: actions/checkout@v2
       
+    - name: activate service account 
+      env: 
+        SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+      run: |
+        echo "$SERVICE_ACCOUNT_KEY" > ${HOME}/gcloud.json
+        gcloud --quiet auth activate-service-account --key-file=${HOME}/gcloud.json --project=$PROJECT_ID
+
     - name: setup terraform
       uses: hashicorp/setup-terraform@v1
-      
+
+    - name: check dirs
+      run: |
+       echo "tf dir - ${tf_actions_working_dir}"
+       echo "current dir - `pwd`"
+       echo "list files - `ls`"
+
     - name: terraform fmt
       id: fmt
       run: terraform fmt -check
@@ -42,11 +55,11 @@ jobs:
 
     - name: terraform validate
       id: validate
-      run: terraform validate -no-color
+      run: terraform validate
 
     - name: terraform plan
       id: plan
-      run: terraform plan -no-color
+      run: terraform plan -out=terraform.plan -var 'project_id=${PROJECT_ID}
  #     continue-on-error: true
  
     - name: comment pr
@@ -54,29 +67,27 @@ jobs:
       if: github.event_name == 'pull_request'
       env:
         PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-      script: |
-        const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-        #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-        #### Terraform Validation 🤖${{ steps.validate.outputs.stdout }}
-        #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+        script: |
+          const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+          #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+          #### Terraform Validation 🤖${{ steps.validate.outputs.stdout }}
+          #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
       
-        <details><summary>Show Plan</summary>
+          <details><summary>Show Plan</summary>
       
-        \`\`\`${process.env.PLAN}\`\`\`
+          \`\`\`${process.env.PLAN}\`\`\`
       
-        </details>
+          </details>
       
-        *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
         
-        github.issues.createComment({
-          issue_number: context.issue.number,
-          owner: context.repo.owner,
-          repo: context.repo.repo,
-          body: output
-        })
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })
         
-     - name: terraform apply
-       if: github.event_name == 'push'
-       run: terraform apply -auto-approve
+    - name: terraform apply
+      if: github.event_name == 'push'
+      run: terraform apply -auto-approve -var 'project_id=${PROJECT_ID}
