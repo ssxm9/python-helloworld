@@ -92,17 +92,17 @@ jobs:
       run: terraform fmt -check -no-color
       continue-on-error: true
 
-    - name: terraform init
-      id: init
-      run: terraform init -no-color
+ #   - name: terraform init
+ #     id: init
+ #     run: terraform init -no-color
 
-    - name: terraform validate
-      id: validate
-      run: terraform validate -no-color
+ #   - name: terraform validate
+ #     id: validate
+ #     run: terraform validate -no-color
 
     - name: terraform plan
       id: plan
-      run: terraform plan -no-color -out=terraform.plan -var 'project_id=x' -var 'env=${{ env.ENV }}'
+      run: terraform plan -no-color -out=terraform.plan -var 'project_id=${{ env.PROJECT_ID }}' -var 'env=${{ env.ENV }}'
  #     continue-on-error: true
     
    # - name: terraform show
