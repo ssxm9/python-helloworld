@@ -105,14 +105,14 @@ jobs:
       run: terraform plan -out=terraform.plan -var 'project_id=${{ env.PROJECT_ID }}' -var 'env=${{ env.ENV }}'
       continue-on-error: true
     
-    - name: terraform show
-      run: terraform show terraform.plan > plan.txt
+   # - name: terraform show
+   #   run: terraform show terraform.plan > plan.txt
    
-    - name: upload artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: terraform plan
-        path: terraform/plan.txt
+   # - name: upload artifact
+   #   uses: actions/upload-artifact@v2
+   #   with:
+   #     name: terraform plan
+   #     path: terraform/plan.txt
    
     - name: add comment to pull request
       uses: actions/github-script@0.9.0
