@@ -94,11 +94,11 @@ jobs:
 
     - name: terraform init
       id: init
-      run: terraform init
+      run: terraform init 
 
     - name: terraform validate
       id: validate
-      run: terraform validate
+      run: terraform validate -no-color
 
     - name: terraform plan
       id: plan
@@ -120,23 +120,36 @@ jobs:
       env:
         PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
         VALIDATE: "terraform\n${{ steps.validate.outputs.stdout }}"
+        FMT: "terraform\n${{ steps.fmt.outputs.stdout }}"
+        INIT: "terraform\n${{ steps.init.outputs.stdout }}"
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+          <details><summary>Show Formatting</summary>
+          
+           \`\`\`${process.env.FMT}\`\`\`
+           
+          </details>
+        
           #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-          #### Terraform Validation 🤖\`${{ steps.validate.outputs.outcome }}\`
-          #### Terraform Plan 📖\`${{ steps.plan.outputs.outcome }}\`
+          <details><summary>Show Init</summary>
           
-          <details><summary>Show Plan</summary>
-          
-          \`\`\`${process.env.PLAN}\`\`\`
-          
+           \`\`\`${process.env.INIT}\`\`\`
+     
           </details>
           
+          #### Terraform Validation 🤖\
           <details><summary>Show Validate</summary>
           
           \`\`\`${process.env.VALIDATE}\`\`\`
+          
+          </details>
+          
+          #### Terraform Plan 📖\`${{ steps.plan.outputs.outcome }}\`
+          <details><summary>Show Plan</summary>
+          
+          \`\`\`${process.env.PLAN}\`\`\`
           
           </details>
           
