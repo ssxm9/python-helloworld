@@ -134,18 +134,6 @@ jobs:
         \`\`\`${process.env.PLAN}\`\`\`
         </details>
         
-        <details><summary>Show Validate</summary>
-        \`\`\`${process.env.VALIDATE}\`\`\`
-        </details>
-        
-        <details><summary>Show Formatting</summary>
-        \`\`\`${process.env.FMT}\`\`\`
-        </details>
-        
-        <details><summary>Show Init</summary>
-        \`\`\`${process.env.INIT}\`\`\`
-        </details>
-        
         *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
         
         github.issues.createComment({
