@@ -89,12 +89,12 @@ jobs:
        
     - name: terraform fmt
       id: fmt
-      run: terraform fmt -check
+      run: terraform fmt -check -no-color
       continue-on-error: true
 
     - name: terraform init
       id: init
-      run: terraform init 
+      run: terraform init -no-color
 
     - name: terraform validate
       id: validate
@@ -139,7 +139,7 @@ jobs:
      
           </details>
           
-          #### Terraform Validation 🤖\
+          #### Terraform Validation 🤖${{ steps.validate.outputs.stdout }}
           <details><summary>Show Validate</summary>
           
           \`\`\`${process.env.VALIDATE}\`\`\`
