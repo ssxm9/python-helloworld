@@ -5,7 +5,7 @@ resource "google_bigquery_dataset" "dataset" {
   location      = "US"
 
   labels = {
-    env = "dev"
+    env = var.env
   }
 }
 
@@ -18,7 +18,7 @@ resource "google_bigquery_table" "table" {
   }
 
   labels = {
-    env = "dev"
+    env = var.env
   }
 
   schema = <<EOF
