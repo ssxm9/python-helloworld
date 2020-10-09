@@ -127,7 +127,7 @@ jobs:
           #### Terraform Validation 🤖\`${{ steps.validate.outputs.outcome }}\`
           #### Terraform Plan - \`${{ steps.plan-check.outputs.check }}\` - 📖
           
-          \`\`\`${process.env.PLAN}\`\`\` `;
+          \`\`\`${process.env.PLAN}\`\`\`
           
           *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
         
