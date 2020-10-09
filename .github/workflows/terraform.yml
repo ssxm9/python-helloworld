@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      PROJECT_ID: 'playground-s-11-268a26d5'
+      PROJECT_ID: 'playground-s-11-28a3b64e'
     
     steps:
     
@@ -108,7 +108,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: terraform plan
-        path: ${{ steps.plan.outputs.stdout }}
+        path: terraform/${{ steps.plan.outputs.stdout }}
    
     - name: add comment to pull request
       uses: actions/github-script@0.9.0
