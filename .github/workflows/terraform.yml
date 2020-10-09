@@ -119,9 +119,9 @@ jobs:
       if: github.event_name == 'pull_request'
       env:
         PLAN: "${{ steps.plan.outputs.stderr }}\n${{ steps.plan.outputs.stdout }}"
-        VALIDATE: "terraform\n${{ steps.validate.outputs.stdout }}"
-        FMT: "terraform\n${{ steps.fmt.outputs.stdout }}"
-        INIT: "terraform\n${{ steps.init.outputs.stdout }}"
+        VALIDATE: "${{ steps.validate.outputs.stderr }}\n${{ steps.validate.outputs.stdout }}"
+        FMT: "${{ steps.fmt.outputs.stderr }}\n${{ steps.fmt.outputs.stdout }}"
+        INIT: "${{ steps.init.outputs.stderr }}\n${{ steps.init.outputs.stdout }}"
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
