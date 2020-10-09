@@ -118,7 +118,7 @@ jobs:
       uses: actions/github-script@0.9.0
       if: github.event_name == 'pull_request'
       env:
-        PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        PLAN: "${{ steps.plan.outputs.stderr }}\n${{ steps.plan.outputs.stdout }}"
         VALIDATE: "terraform\n${{ steps.validate.outputs.stdout }}"
         FMT: "terraform\n${{ steps.fmt.outputs.stdout }}"
         INIT: "terraform\n${{ steps.init.outputs.stdout }}"
@@ -139,7 +139,7 @@ jobs:
      
           </details>
           
-          #### Terraform Validation 🤖${{ steps.validate.outputs.stdout }}
+          #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
           <details><summary>Show Validate</summary>
           
           \`\`\`${process.env.VALIDATE}\`\`\`
