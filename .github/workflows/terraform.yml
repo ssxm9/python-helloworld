@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      PROJECT_ID: 'playground-s-11-89252359'
+      PROJECT_ID: 'playground-s-11-268a26d5'
     
     steps:
     
@@ -105,32 +105,43 @@ jobs:
       run: terraform plan -out=terraform.plan -var 'project_id=${{ env.PROJECT_ID }}' -var 'env=${{ env.ENV }}'
  #     continue-on-error: true
    
- #   - uses: actions/github-script@0.9.0
- #     if: github.event_name == 'pull_request'
- #     env:
- #      PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
- #     with:
-#       github-token: ${{ secrets.GITHUB_TOKEN }}
- #      script: |
- #       const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+    - name: add comment to pull request
+      uses: actions/github-script@0.9.0
+      if: github.event_name == 'pull_request'
+      env:
+       PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+      with:
+       github-token: ${{ secrets.GITHUB_TOKEN }}
+       script: |
+        const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
         #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
         #### Terraform Validation 🤖${{ steps.validate.outputs.stdout }}
         #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
       
- #       <details><summary>Show Plan</summary>
+        <details><summary>Show Plan</summary>
       
- #       \`\`\`${process.env.PLAN}\`\`\`
+        \`\`\`${process.env.PLAN}\`\`\`
       
-  #      </details>
+        </details>
       
-  #      *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+        *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
         
-  #      github.issues.createComment({
-  #        owner: context.repo.owner,
-  #        repo: context.repo.repo,
-  #        body: output
-  #      })
+        github.issues.createComment({
+          issue_number: context.issue.number,
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          body: output
+        })
         
+    - name: Terraform Plan Status
+      if: steps.plan.outcome == 'failure'
+      run: exit 1
+   
+    - name: check ls
+      run: |
+        ls
+        echo "output is {{ steps.plan.outputs.stdout }}"
+       
     - name: terraform apply
       if: github.event_name == 'push'
-      run: terraform apply terraform.plan -auto-approve
+      run: terraform apply -auto-approve terraform.plan 
