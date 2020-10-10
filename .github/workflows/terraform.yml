@@ -63,20 +63,13 @@ jobs:
         echo ${{ env.PROJECT_ID }}
         echo ${{ env.ENV }}
         
-   # - name: gcloud setup
-   #   uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-   #   with:
-   #       version: '290.0.1'
-   #       project_id: ${{ env.PROJECT_ID }}
-   #       service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-   #       export_default_credentials: true
-   
-    - name: export gcloud credentials
-      env: 
-        SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-      run: |
-        export GOOGLE_APPLICATION_CREDENTIALS=${SERVICE_ACCOUNT_KEY}
-        export GOOGLE_PROJECT=${{ env.PROJECT_ID }}
+    - name: gcloud setup
+      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+          version: '290.0.1'
+          project_id: ${{ env.PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+          export_default_credentials: true
       
    # - name: activate service account 
    #   env: 
