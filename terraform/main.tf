@@ -6,8 +6,8 @@ provider "google" {
 
 terraform { 
   backend "gcs" {   
-    bucket  = "terraform-remote-state-test1"
-    prefix = "${var.env}/terraform.tfstate"
+    bucket  = "${var.backend_bucket}"
+    prefix = "${var.env}"
 #    project = "<YOUR PROJECT ID>" 
   }
 }
