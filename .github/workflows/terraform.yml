@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      PROJECT_ID: 'playground-s-11-d66c4d90'
+      PROJECT_ID: 'playground-s-11-a73aca28'
     
     steps:
     
@@ -38,14 +38,9 @@ jobs:
       run: |
         CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
         
-        if [ $CURRENT_BRANCH == develop ];
+        if [ $CURRENT_BRANCH == develop ] || [ `echo ${CURRENT_BRANCH::7}` == feature ];
          then
            echo ::set-env name=ENV::dev
-        
-        elif [ `echo ${CURRENT_BRANCH::7}` == feature ];
-         then
-           FEATURE_TAG=$(echo $CURRENT_BRANCH | sed 's/\//-/')
-           echo ::set-env name=ENV::${FEATURE_TAG}
           
         elif [ $CURRENT_BRANCH == qa ];
          then
@@ -68,13 +63,20 @@ jobs:
         echo ${{ env.PROJECT_ID }}
         echo ${{ env.ENV }}
         
-    - name: gcloud setup
-      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-      with:
-          version: '290.0.1'
-          project_id: ${{ env.PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-          export_default_credentials: true
+   # - name: gcloud setup
+   #   uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+   #   with:
+   #       version: '290.0.1'
+   #       project_id: ${{ env.PROJECT_ID }}
+   #       service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+   #       export_default_credentials: true
+   
+    - name: export gcloud credentials
+      env: 
+        SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+      run: |
+        export GOOGLE_APPLICATION_CREDENTIALS=${SERVICE_ACCOUNT_KEY}
+        export GOOGLE_PROJECT=${{ env.PROJECT_ID }}
       
    # - name: activate service account 
    #   env: 
