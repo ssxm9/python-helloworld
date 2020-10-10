@@ -89,7 +89,7 @@ jobs:
 
     - name: terraform init
       id: init
-      run: terraform init -no-color -backend-config 'env=${{ env.ENV }}'
+      run: terraform init -no-color -backend-config "prefix=${{ env.ENV }}"
 
     - name: terraform validate
       id: validate
