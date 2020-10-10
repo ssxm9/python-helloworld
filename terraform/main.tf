@@ -8,7 +8,7 @@ terraform {
   backend "gcs" {   
     bucket  = "terraform-remote-state-test1"
     prefix = "${var.env}"
-    path    = "${var.env}/terraform.tfstate"   
+    path    = "/terraform.tfstate"   
 #    project = "<YOUR PROJECT ID>" 
   }
 }
