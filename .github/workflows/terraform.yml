@@ -14,9 +14,9 @@ on:
       - '.github/workflows/terraform.yml'
     
   pull_request:
-    paths:
-      - 'terraform/**'
-      - '.github/workflows/terraform.yml'
+#    paths:
+#      - 'terraform/**'
+#      - '.github/workflows/terraform.yml'
   
 defaults:
   run:
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      PROJECT_ID: 'playground-s-11-28a3b64e'
+      PROJECT_ID: 'playground-s-11-a73aca28'
     
     steps:
     
@@ -38,14 +38,9 @@ jobs:
       run: |
         CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
         
-        if [ $CURRENT_BRANCH == develop ];
+        if [ $CURRENT_BRANCH == develop ] || [ `echo ${CURRENT_BRANCH::7}` == feature ];
          then
            echo ::set-env name=ENV::dev
-        
-        elif [ `echo ${CURRENT_BRANCH::7}` == feature ];
-         then
-           FEATURE_TAG=$(echo $CURRENT_BRANCH | sed 's/\//-/')
-           echo ::set-env name=ENV::${FEATURE_TAG}
           
         elif [ $CURRENT_BRANCH == qa ];
          then
@@ -89,21 +84,21 @@ jobs:
        
     - name: terraform fmt
       id: fmt
-      run: terraform fmt -check
+      run: terraform fmt -check -no-color
       continue-on-error: true
 
     - name: terraform init
       id: init
-      run: terraform init
+      run: terraform init -no-color -backend-config "prefix=${{ env.ENV }}"
 
     - name: terraform validate
       id: validate
-      run: terraform validate
+      run: terraform validate -no-color
 
     - name: terraform plan
       id: plan
-      run: terraform plan -out=terraform.plan -var 'project_id=${{ env.PROJECT_ID }}' -var 'env=${{ env.ENV }}'
-      continue-on-error: true
+      run: terraform plan -no-color -out=terraform.plan -var 'project_id=${{ env.PROJECT_ID }}' -var 'env=${{ env.ENV }}'
+ #     continue-on-error: true
     
    # - name: terraform show
    #   run: terraform show terraform.plan > plan.txt
@@ -114,42 +109,57 @@ jobs:
    #     name: terraform plan
    #     path: terraform/plan.txt
    
-    - name: add comment to pull request
+    - name: Update Pull Request
       uses: actions/github-script@0.9.0
-      if: github.event_name == 'pull_request'
+      if: github.event_name == 'pull_request' && always()
       env:
-       PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        PLAN: "${{ steps.plan.outputs.stderr }}\n${{ steps.plan.outputs.stdout }}"
+        VALIDATE: "${{ steps.validate.outputs.stderr }}\n${{ steps.validate.outputs.stdout }}"
+        FMT: "${{ steps.fmt.outputs.stderr }}\n${{ steps.fmt.outputs.stdout }}"
+        INIT: "${{ steps.init.outputs.stderr }}\n${{ steps.init.outputs.stdout }}"
       with:
-       github-token: ${{ secrets.GITHUB_TOKEN }}
-       script: |
-        const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-        #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-        #### Terraform Validation 🤖${{ steps.validate.outputs.stdout }}
-        #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
-      
-        <details><summary>Show Plan</summary>
-      
-        \`\`\`${process.env.PLAN}\`\`\`
-      
-        </details>
-      
-        *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+          <details><summary>Show Formatting Output</summary>
+          
+           \`\`\`${process.env.FMT}\`\`\`
+           
+          </details>
         
-        github.issues.createComment({
-          issue_number: context.issue.number,
-          owner: context.repo.owner,
-          repo: context.repo.repo,
-          body: output
-        })
+          #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+          <details><summary>Show Init Output</summary>
+          
+           \`\`\`${process.env.INIT}\`\`\`
+     
+          </details>
+          
+          #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+          <details><summary>Show Validate Output</summary>
+          
+          \`\`\`${process.env.VALIDATE}\`\`\`
+          
+          </details>
+          
+          #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+          <details><summary>Show Plan Output</summary>
+          
+          \`\`\`${process.env.PLAN}\`\`\`
+          
+          </details>
+          
+          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
         
-    - name: Terraform Plan Status
-      if: steps.plan.outcome == 'failure'
-      run: exit 1
-   
-    - name: check ls
-      run: |
-        ls
-        echo "output is {{ steps.plan.outputs.stdout }}"
+          github.issues.createComment({
+             issue_number: context.issue.number,
+             owner: context.repo.owner,
+             repo: context.repo.repo,
+             body: output
+          })
+
+#    - name: terraform plan status
+#      if: steps.plan.outcome == 'failure'
+#      run: exit 1
        
     - name: terraform apply
       if: github.event_name == 'push'
