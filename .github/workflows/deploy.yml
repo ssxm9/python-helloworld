@@ -4,7 +4,8 @@ on:
   push:
     branches: [ feature/**, develop, qa, mock-prod, prod ] 
     paths:
-      - "dags/**"
+      - 'dags/**'
+      - '.github/workflows/deploy.yml'
 
 jobs:
   deploy:
