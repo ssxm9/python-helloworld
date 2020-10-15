@@ -139,7 +139,7 @@ jobs:
     #    fi
         
          
-    - name: set env variables for ${{ GITHUB_REF#refs/heads/ }} environment
+    - name: set env variables for the environment
       env:
         SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
         SERVICE_ACCOUNT_KEY_PRD: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY_PRD }}
@@ -159,7 +159,6 @@ jobs:
            echo "SERVICE_ACCOUNT_KEY=${{ env.SERVICE_ACCOUNT_KEY }}" >> $GITHUB_ENV
            echo "PROJECT_ID=${{ env.PROJECT_ID }}" >> $GITHUB_ENV
 
-          
         elif [ $CURRENT_BRANCH == qa ];
          then
           echo "BRANCH_TAG=qa" >> $GITHUB_ENV
