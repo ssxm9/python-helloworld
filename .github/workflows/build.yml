@@ -28,11 +28,11 @@ jobs:
     - name: checkout code
       uses: actions/checkout@v2
     
-    - name: set up python 3.x
+    - name: set up python 3.7
       uses: actions/setup-python@v2
       with:
         # Semantic version range syntax or exact version of a Python version
-        python-version: '3.x' 
+        python-version: '3.7' 
     
   #  - name: set up Python ${{ matrix.python-version }}
   #    uses: actions/setup-python@v2
@@ -56,14 +56,13 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
           ${{ runner.os }}-
-      continue-on-error: true
     
     - name: install dependencies
       run: |
-        python -m pip install --upgrade pip setuptools wheel
-        pip install flake8 coverage
+        python -m pip install --upgrade pip
         pip install -r requirements.txt
-      
+        pip install flake8 coverage
+
     - name: lint with flake8
       run: |
         flake8 . 
