@@ -3,15 +3,19 @@ name: Dags Deployment
 on:
   push:
     branches: [ feature/**, develop, qa, mock-prod, prod ] 
+    paths:
+      - 'dags/**'
+      - '.github/workflows/deploy.yml'
 
 jobs:
   deploy:
+    name: deploy dags to airflow
     runs-on: ubuntu-latest
 
     env:
-      PROJECT_ID: 'playground-s-11-0592b526'
-      CLUSTER_NAME: 'test'
-      ZONE: 'us-central1-b'
+      PROJECT_ID: '***'
+      CLUSTER_NAME: '***'
+      ZONE: '***'
 
   
     steps:
@@ -51,12 +55,12 @@ jobs:
           echo "merge to correct branch"
         fi
         
-    - name: check vars
+    - name: check tags
       run: |
-        echo ${NAMESPACE}
-        echo ${WEB_SERVER}
+        echo "namespace is ${NAMESPACE}"
+        echo "web server is ${WEB_SERVER}"
 
-    - name: Activate Service Account 
+    - name: activate service account 
       env: 
         SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
       run: |
@@ -68,7 +72,7 @@ jobs:
            
     - name: configure gke cluster access
       run: |
-        gcloud -q container clusters get-credentials ${CLUSTER_NAME} --zone ${ZONE} --project ${PROJECT_ID}
+        gcloud --quiet container clusters get-credentials ${CLUSTER_NAME} --zone ${ZONE} --project ${PROJECT_ID}
 
     - name: deploy dags
       run: |
