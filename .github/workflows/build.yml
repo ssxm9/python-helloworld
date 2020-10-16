@@ -6,14 +6,8 @@ name: Docker Build and Push
 # Controls when the action will run.
 on:
   push:
-    branches: [ master, feature/**, develop, qa, mock-prod, prod ] 
+    branches: [ master, feature/**, develop, qa, mock-prod, prod ]  
     paths:
-      - 'containers/**'
-      - '.github/workflows/build.yml'
-        
-  pull_request:
-    branches: [ master, feature/**, develop, qa, mock-prod, prod ] 
-    paths: 
       - 'containers/**'
       - '.github/workflows/build.yml'
 
@@ -85,12 +79,12 @@ jobs:
   
   # This workflow contains a single job called "build"
   build:
-    needs: test
+#    needs: test
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
     env:
-      GCP_PROJECT_ID: 'playground-s-11-4336d717'
+      GCP_PROJECT_ID: 'playground-s-11-45f71f6e'
       GCP_PROJECT_ID_PRD: 'xxx'
       SERVICE_NAME: "hello-world" 
   
