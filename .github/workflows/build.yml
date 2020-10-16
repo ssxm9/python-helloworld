@@ -149,7 +149,7 @@ jobs:
         if [ $CURRENT_BRANCH == develop ];
          then
           echo "BRANCH_TAG=dev" >> $GITHUB_ENV
-          echo "SERVICE_ACCOUNT_KEY=${{ GCP_SERVICE_ACCOUNT_KEY }}" >> $GITHUB_ENV
+          echo "SERVICE_ACCOUNT_KEY=${GCP_SERVICE_ACCOUNT_KEY}" >> $GITHUB_ENV
           echo "PROJECT_ID=${{ env.PROJECT_ID }}" >> $GITHUB_ENV
         
         elif [ `echo ${CURRENT_BRANCH::7}` == feature ];
@@ -162,19 +162,19 @@ jobs:
         elif [ $CURRENT_BRANCH == qa ];
          then
           echo "BRANCH_TAG=qa" >> $GITHUB_ENV
-          echo "SERVICE_ACCOUNT_KEY=${{ GCP_SERVICE_ACCOUNT_KEY }}" >> $GITHUB_ENV
+          echo "SERVICE_ACCOUNT_KEY=${GCP_SERVICE_ACCOUNT_KEY}" >> $GITHUB_ENV
           echo "PROJECT_ID=${{ env.PROJECT_ID }}" >> $GITHUB_ENV
 
         elif [ $CURRENT_BRANCH == mock-prod ];
          then
           echo "BRANCH_TAG=mck-prd" >> $GITHUB_ENV
-          echo "SERVICE_ACCOUNT_KEY=${{ env.GCP_SERVICE_ACCOUNT_KEY }}" >> $GITHUB_ENV
+          echo "SERVICE_ACCOUNT_KEY=${GCP_SERVICE_ACCOUNT_KEY}" >> $GITHUB_ENV
           echo "PROJECT_ID=${{ env.PROJECT_ID }}" >> $GITHUB_ENV
 
         elif [ $CURRENT_BRANCH == prod ];
          then
           echo "BRANCH_TAG=prd" >> $GITHUB_ENV
-          echo "SERVICE_ACCOUNT_KEY=${{ GCP_SERVICE_ACCOUNT_KEY_PRD }}" >> $GITHUB_ENV
+          echo "SERVICE_ACCOUNT_KEY=${GCP_SERVICE_ACCOUNT_KEY_PRD}" >> $GITHUB_ENV
           echo "PROJECT_ID=${{ env.PROJECT_ID_PRD }}" >> $GITHUB_ENV
          
         else
