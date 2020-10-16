@@ -84,8 +84,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PROJECT_ID: 'playground-s-11-4336d717'
-      PROJECT_ID_PRD: 'xxx'
+      GCP_PROJECT_ID: 'playground-s-11-4336d717'
+      GCP_PROJECT_ID_PRD: 'xxx'
       SERVICE_NAME: "hello-world" 
   
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -149,32 +149,33 @@ jobs:
         if [ $CURRENT_BRANCH == develop ];
          then
           echo "BRANCH_TAG=dev" >> $GITHUB_ENV
-          echo "PROJECT_ID=${{ env.PROJECT_ID }}" >> $GITHUB_ENV
+          echo "SERVICE_ACCOUNT_KEY="${GCP_SERVICE_ACCOUNT_KEY}"" >> $GITHUB_ENV
+          echo "PROJECT_ID=${{ env.GCP_PROJECT_ID }}" >> $GITHUB_ENV
         
         elif [ `echo ${CURRENT_BRANCH::7}` == feature ];
          then
            FEATURE_TAG=$(echo $CURRENT_BRANCH | sed 's/\//-/')
            echo "BRANCH_TAG=${FEATURE_TAG}" >> $GITHUB_ENV
            echo "SERVICE_ACCOUNT_KEY="${GCP_SERVICE_ACCOUNT_KEY}"" >> $GITHUB_ENV
-           echo "PROJECT_ID=${{ env.PROJECT_ID }}" >> $GITHUB_ENV
+           echo "PROJECT_ID=${{ env.GCP_PROJECT_ID }}" >> $GITHUB_ENV
            
         elif [ $CURRENT_BRANCH == qa ];
          then
           echo "BRANCH_TAG=qa" >> $GITHUB_ENV
           echo "SERVICE_ACCOUNT_KEY="${GCP_SERVICE_ACCOUNT_KEY}"" >> $GITHUB_ENV
-          echo "PROJECT_ID=${{ env.PROJECT_ID }}" >> $GITHUB_ENV
+          echo "PROJECT_ID=${{ env.GCP_PROJECT_ID }}" >> $GITHUB_ENV
           
         elif [ $CURRENT_BRANCH == mock-prod ];
          then
           echo "BRANCH_TAG=mck-prd" >> $GITHUB_ENV
           echo "SERVICE_ACCOUNT_KEY="${GCP_SERVICE_ACCOUNT_KEY}"" >> $GITHUB_ENV
-          echo "PROJECT_ID=${{ env.PROJECT_ID }}" >> $GITHUB_ENV
+          echo "PROJECT_ID=${{ env.GCP_PROJECT_ID }}" >> $GITHUB_ENV
           
         elif [ $CURRENT_BRANCH == prod ];
          then
           echo "BRANCH_TAG=prd" >> $GITHUB_ENV
           echo "SERVICE_ACCOUNT_KEY="${GCP_SERVICE_ACCOUNT_KEY_PRD}"" >> $GITHUB_ENV
-          echo "PROJECT_ID=${{ env.PROJECT_ID_PRD }}" >> $GITHUB_ENV
+          echo "PROJECT_ID=${{ env.GCP_PROJECT_ID_PRD }}" >> $GITHUB_ENV
          
         else
           echo "merge to correct branch"
@@ -189,7 +190,7 @@ jobs:
     - name: Activate Service Account 
       run: |
         echo "$SERVICE_ACCOUNT_KEY" > ${HOME}/gcloud.json
-        gcloud --quiet auth activate-service-account --key-file=${HOME}/gcloud.json --project=$PROJECT_ID
+        gcloud --quiet auth activate-service-account --key-file=${HOME}/gcloud.json --project=${PROJECT_ID}
       continue-on-error: true
  #       gcloud auth configure-docker 
     
