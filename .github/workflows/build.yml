@@ -84,7 +84,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      GCP_PROJECT_ID: 'playground-s-11-4336d717'
+      GCP_PROJECT_ID: 'playground-s-11-45f71f6e'
       GCP_PROJECT_ID_PRD: 'xxx'
       SERVICE_NAME: "hello-world" 
   
