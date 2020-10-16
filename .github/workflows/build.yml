@@ -20,24 +20,24 @@ jobs:
   test:
     
     runs-on: ubuntu-latest
-  #  strategy:
-  #    matrix:
-  #      python-version: [3.5]
+    strategy:
+      matrix:
+        python-version: [3.7]
     
     steps:
     - name: checkout code
       uses: actions/checkout@v2
     
-    - name: set up python 3.x
+ #   - name: set up python 3.x
+ #     uses: actions/setup-python@v2
+ #     with:
+        # Semantic version range syntax or exact version of a Python version
+#        python-version: '3.8' 
+    
+    - name: set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        # Semantic version range syntax or exact version of a Python version
-        python-version: '3.8' 
-    
-  #  - name: set up Python ${{ matrix.python-version }}
-  #    uses: actions/setup-python@v2
-  #    with:
-  #      python-version: ${{ matrix.python-version }}
+        python-version: ${{ matrix.python-version }}
      
     - name: check python version
       run: |
@@ -59,9 +59,9 @@ jobs:
     
     - name: install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        python -m pip install --upgrade pip wheel
         pip install flake8 coverage
+        pip install -r requirements.txt
 
     - name: lint with flake8
       run: |
@@ -106,6 +106,7 @@ jobs:
         CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
         echo ${CURRENT_BRANCH::7}
         echo $GITHUB_SHA_SHORT
+        
     #- name: env variables for develop branch
     #  if: github.ref == 'refs/heads/develop'
     #  run: |
