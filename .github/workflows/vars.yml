@@ -3,9 +3,9 @@ name: Vars
 # Controls when the action will run.
 on:
   push:
-    branches: [ master, feature/test ]
+    branches: [ master ]
   pull_request:
-    branches: [ master, feature/test ]
+    branches: [ master ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
