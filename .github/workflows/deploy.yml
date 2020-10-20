@@ -10,7 +10,7 @@ on:
 jobs:
   deploy:
     name: deploy dags to airflow
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest 
 
     env:
       PROJECT_ID: '***'
