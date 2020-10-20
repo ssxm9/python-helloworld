@@ -18,6 +18,7 @@ defaults:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   test:
+    if: github.ref == 'refs/heads/qa'
     
     runs-on: ubuntu-latest
 #    strategy:
