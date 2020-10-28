@@ -15,8 +15,35 @@ defaults:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  test:
+  checkpoint:
+    runs-on: ubuntu-latest
     
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v2
+    
+    - name: verify mergability
+      run: |
+        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+        echo ${CURRENT_BRANCH::7}
+        
+        DESTINATION_BRANCH=${GITHUB_REF#refs/heads/}
+        SOURCE_BRANCH='feature/new'
+        
+        MERGE_BASE="$(git merge-base $SOURCE_BRANCH $DESTINATION_BRANCH)"
+        MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse $SOURCE_BRANCH)"
+        
+        if [ "$MERGE_BASE" != "$MERGE_SOURCE_CURRENT_COMMIT" ]; 
+        then
+          echo -e "Branch with name '$SOURCE_BRANCH' is not completely merged with $DESTINATION_BRANCH";
+          exit 1;
+        
+        else
+          echo -e "Branch with name '$SOURCE_BRANCH' is merged with $DESTINATION_BRANCH"
+        fi
+    
+
+  test:
     runs-on: ubuntu-latest
   #  strategy:
   #    matrix:
@@ -47,7 +74,7 @@ jobs:
   
   # This workflow contains a single job called "build"
   build:
-    needs: test
+    needs: checkpoint
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
