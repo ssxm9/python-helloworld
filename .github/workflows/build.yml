@@ -40,13 +40,15 @@ jobs:
         MERGE_BASE="$(git merge-base $SOURCE_BRANCH $DESTINATION_BRANCH)"
         MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse $SOURCE_BRANCH)"
         
+        SOURCE_BRANCH_NAME=$SOURCE_BRANCH::7
+        
         if [ "$MERGE_BASE" != "$MERGE_SOURCE_CURRENT_COMMIT" ]; 
         then
-          echo -e "Branch with name '$SOURCE_BRANCH::7' is not completely merged with $DESTINATION_BRANCH";
+          echo -e "Branch with name '$SOURCE_BRANCH_NAME' is not completely merged with $DESTINATION_BRANCH";
           exit 1;
         
         else
-          echo -e "Branch with name '$SOURCE_BRANCH::7' is merged with $DESTINATION_BRANCH"
+          echo -e "Branch with name '$SOURCE_BRANCH_NAME' is merged with $DESTINATION_BRANCH"
         fi
     
 
