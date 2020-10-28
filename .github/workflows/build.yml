@@ -27,6 +27,9 @@ jobs:
     - name: checkout code
       uses: actions/checkout@v2
     
+    - name: check branch
+      run: git branch
+    
     - name: verify mergability
       run: |
         CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
@@ -49,7 +52,7 @@ jobs:
     
 
   test:
-#     if: github.ref == 'refs/heads/qa' && github.event_name == 'push' || github.event_name == 'pull_request'
+    if: github.ref == 'refs/heads/qa' && github.event_name == 'push' || github.event_name == 'pull_request'
 
     runs-on: ubuntu-latest
 #    strategy:
