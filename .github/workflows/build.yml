@@ -34,9 +34,9 @@ jobs:
         
         DESTINATION_BRANCH=${GITHUB_REF#refs/heads/}
                 
-        MERGE_BASE="$(git merge-base feature/new $DESTINATION_BRANCH)"
+        MERGE_BASE="$(git merge-base 'feature/new' $DESTINATION_BRANCH)"
         echo $MERGE_BASE
-        MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse feature/new)"
+        MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse 'feature/new')"
         echo $MERGE_SOURCE_CURRENT_COMMIT
         
         if [ "$MERGE_BASE" != "$MERGE_SOURCE_CURRENT_COMMIT" ]; 
