@@ -33,10 +33,12 @@ jobs:
         echo ${CURRENT_BRANCH::7}
         
         DESTINATION_BRANCH=${GITHUB_REF#refs/heads/}
-        SOURCE_BRANCH='feature/new'
-        
+        SOURCE_BRANCH=feature/new
+                
         MERGE_BASE="$(git merge-base $SOURCE_BRANCH $DESTINATION_BRANCH)"
+        echo $MERGE_BASE
         MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse $SOURCE_BRANCH)"
+        echo $MERGE_SOURCE_CURRENT_COMMIT
         
         if [ "$MERGE_BASE" != "$MERGE_SOURCE_CURRENT_COMMIT" ]; 
         then
