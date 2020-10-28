@@ -30,4 +30,3 @@ setup(
         "gui_scripts": []       # GUI executables (creates pyw on Windows)
     }
 )
- 

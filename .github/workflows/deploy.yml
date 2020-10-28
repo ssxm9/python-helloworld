@@ -4,12 +4,13 @@ on:
   push:
     branches: [ feature/**, develop, qa, mock-prod, prod ] 
     paths:
-      - "dags/**"
+      - 'dags/**'
+      - '.github/workflows/deploy.yml'
 
 jobs:
   deploy:
     name: deploy dags to airflow
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest 
 
     env:
       PROJECT_ID: '***'

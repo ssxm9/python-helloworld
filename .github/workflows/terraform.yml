@@ -63,6 +63,11 @@ jobs:
         echo ${{ env.PROJECT_ID }}
         echo ${{ env.ENV }}
         
+    - name: "Setup - Security Scan"
+      uses: triat/terraform-security-scan@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
     - name: gcloud setup
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
@@ -89,7 +94,7 @@ jobs:
 
     - name: terraform init
       id: init
-      run: terraform init -no-color -backend-config "prefix=${{ env.ENV }}"
+      run: terraform init -no-color -backend-config "prefix=${{ env.ENV }}" -backend-config "bucket=terraform-remote-state-test1"
 
     - name: terraform validate
       id: validate
@@ -163,4 +168,4 @@ jobs:
        
     - name: terraform apply
       if: github.event_name == 'push'
-      run: terraform apply -auto-approve terraform.plan
+      run: terraform apply -auto-approve terraform.plan  
