@@ -33,7 +33,7 @@ jobs:
         echo ${CURRENT_BRANCH::7}
         
         DESTINATION_BRANCH=${GITHUB_REF#refs/heads/}        
-        SOURCE_BRANCH='feature/new'
+        SOURCE_BRANCH="feature/new"
         
         git log $SOURCE_BRANCH
         
