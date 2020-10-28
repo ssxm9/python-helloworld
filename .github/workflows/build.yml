@@ -33,11 +33,9 @@ jobs:
       run: |
         CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
         echo ${CURRENT_BRANCH}
-        
-        git branch -a
-        
+                
         DESTINATION_BRANCH=${GITHUB_REF#refs/heads/}        
-        SOURCE_BRANCH=origin/qa
+        SOURCE_BRANCH=feature/new
                 
         MERGE_BASE="$(git merge-base $SOURCE_BRANCH $DESTINATION_BRANCH)"
         MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse $SOURCE_BRANCH)"
