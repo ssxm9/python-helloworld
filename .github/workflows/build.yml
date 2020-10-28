@@ -30,10 +30,12 @@ jobs:
     - name: verify mergability
       run: |
         CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
-        echo ${CURRENT_BRANCH::7}
+        echo ${CURRENT_BRANCH}
+        
+        git branch -a
         
         DESTINATION_BRANCH=${GITHUB_REF#refs/heads/}        
-        SOURCE_BRANCH=qa
+        SOURCE_BRANCH=origin/qa
                 
         MERGE_BASE="$(git merge-base $SOURCE_BRANCH $DESTINATION_BRANCH)"
         MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse $SOURCE_BRANCH)"
