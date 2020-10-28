@@ -34,7 +34,7 @@ jobs:
     - name: check branch
       run: git branch
     
-    - name: verify mergability
+    - name: verify mergeability
       run: |   
         SOURCE_BRANCH=origin/feature/new
         DESTINATION_BRANCH=${GITHUB_REF#refs/heads/}        
