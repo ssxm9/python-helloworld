@@ -6,7 +6,7 @@ name: Docker Build and Push
 # Controls when the action will run.
 on:
   push:
-    branches: [ master, feature/**, develop, qa, mock-prod, prod ]  
+    branches: [ master, feature/**, develop, qa, mock-prod, prod ]   
     paths:
       - 'containers/**'
       - '.github/workflows/build.yml'
