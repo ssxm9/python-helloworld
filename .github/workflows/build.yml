@@ -42,11 +42,11 @@ jobs:
         
         if [ "$MERGE_BASE" != "$MERGE_SOURCE_CURRENT_COMMIT" ]; 
         then
-          echo -e "Branch with name '$SOURCE_BRANCH' is not completely merged with $DESTINATION_BRANCH";
+          echo -e "Branch with name '$SOURCE_BRANCH::7' is not completely merged with $DESTINATION_BRANCH";
           exit 1;
         
         else
-          echo -e "Branch with name '$SOURCE_BRANCH' is merged with $DESTINATION_BRANCH"
+          echo -e "Branch with name '$SOURCE_BRANCH::7' is merged with $DESTINATION_BRANCH"
         fi
     
 
