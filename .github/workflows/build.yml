@@ -40,7 +40,7 @@ jobs:
         MERGE_BASE="$(git merge-base $SOURCE_BRANCH $DESTINATION_BRANCH)"
         MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse $SOURCE_BRANCH)"
         
-        SOURCE_BRANCH_NAME=$($SOURCE_BRANCH | cut -d '/' -f2-)
+        SOURCE_BRANCH_NAME=$(echo $SOURCE_BRANCH | cut -d '/' -f2-)
         
         if [ "$MERGE_BASE" != "$MERGE_SOURCE_CURRENT_COMMIT" ]; 
         then
