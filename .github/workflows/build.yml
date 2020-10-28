@@ -33,19 +33,21 @@ jobs:
         echo ${CURRENT_BRANCH::7}
         
         DESTINATION_BRANCH=${GITHUB_REF#refs/heads/}
-                
-        MERGE_BASE="$(git merge-base 'feature/new' $DESTINATION_BRANCH)"
-        echo $MERGE_BASE
-        MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse 'feature/new')"
-        echo $MERGE_SOURCE_CURRENT_COMMIT
+        echo $DESTINATION_BRANCH
+        
+        SOURCE_BRANCH='feature/new'
+        echo $SOURCE_BRANCH
+        
+        MERGE_BASE="$(git merge-base $SOURCE_BRANCH $DESTINATION_BRANCH)"
+        MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse $SOURCE_BRANCH)"
         
         if [ "$MERGE_BASE" != "$MERGE_SOURCE_CURRENT_COMMIT" ]; 
         then
-          echo -e "Branch with name 'feature/new' is not completely merged with $DESTINATION_BRANCH";
+          echo -e "Branch with name '$SOURCE_BRANCH' is not completely merged with $DESTINATION_BRANCH";
           exit 1;
         
         else
-          echo -e "Branch with name 'feature/new' is merged with $DESTINATION_BRANCH"
+          echo -e "Branch with name '$SOURCE_BRANCH' is merged with $DESTINATION_BRANCH"
         fi
     
 
