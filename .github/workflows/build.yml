@@ -35,12 +35,13 @@ jobs:
       run: git branch
     
     - name: verify mergability
-      run: |
-        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
-        echo ${CURRENT_BRANCH}
-                
-        DESTINATION_BRANCH=${GITHUB_REF#refs/heads/}        
+      run: |  
+        green='\033[1;32m'
+        red='\e[31m'
+        no_color='\033[0m'   
+        
         SOURCE_BRANCH=origin/feature/new
+        DESTINATION_BRANCH=${GITHUB_REF#refs/heads/}        
                 
         MERGE_BASE="$(git merge-base $SOURCE_BRANCH $DESTINATION_BRANCH)"
         MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse $SOURCE_BRANCH)"
@@ -49,11 +50,11 @@ jobs:
         
         if [ "$MERGE_BASE" != "$MERGE_SOURCE_CURRENT_COMMIT" ]; 
         then
-          echo -e "Branch with name '$SOURCE_BRANCH_NAME' is not completely merged with $DESTINATION_BRANCH";
+          echo -e "${red}Branch with name '$SOURCE_BRANCH_NAME' is not completely merged with $DESTINATION_BRANCH${no_color}";
           exit 1;
         
         else
-          echo -e "Branch with name '$SOURCE_BRANCH_NAME' is merged with $DESTINATION_BRANCH"
+          echo -e "${green}Branch with name '$SOURCE_BRANCH_NAME' is merged with $DESTINATION_BRANCH${no_color}"
         fi
     
 
