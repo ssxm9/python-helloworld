@@ -21,6 +21,8 @@ defaults:
 jobs:
 
   checkpoint:
+    if: github.event_name == 'push'
+    
     runs-on: ubuntu-latest
     
     steps:
@@ -33,25 +35,21 @@ jobs:
       run: git branch
     
     - name: verify mergability
-      run: |
-        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
-        echo ${CURRENT_BRANCH}
-                
-        DESTINATION_BRANCH=${GITHUB_REF#refs/heads/}        
+      run: |   
         SOURCE_BRANCH=origin/feature/new
+        DESTINATION_BRANCH=${GITHUB_REF#refs/heads/}        
                 
         MERGE_BASE="$(git merge-base $SOURCE_BRANCH $DESTINATION_BRANCH)"
         MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse $SOURCE_BRANCH)"
         
         SOURCE_BRANCH_NAME=$(echo $SOURCE_BRANCH | cut -d '/' -f2-)
         
-        if [ "$MERGE_BASE" != "$MERGE_SOURCE_CURRENT_COMMIT" ]; 
+        if [ "$MERGE_BASE" = "$MERGE_SOURCE_CURRENT_COMMIT" ]; 
         then
-          echo -e "Branch with name '$SOURCE_BRANCH_NAME' is not completely merged with $DESTINATION_BRANCH";
-          exit 1;
-        
+          echo "'$SOURCE_BRANCH_NAME' branch is merged with '$DESTINATION_BRANCH'"
         else
-          echo -e "Branch with name '$SOURCE_BRANCH_NAME' is merged with $DESTINATION_BRANCH"
+          echo "'$SOURCE_BRANCH_NAME' branch is not completely merged with '$DESTINATION_BRANCH'";
+          exit 1;
         fi
     
 
