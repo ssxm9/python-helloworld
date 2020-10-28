@@ -35,7 +35,7 @@ jobs:
         DESTINATION_BRANCH=${GITHUB_REF#refs/heads/}        
         SOURCE_BRANCH="feature/new"
         
-        git log $SOURCE_BRANCH
+        git log feature/new
         
         MERGE_BASE="$(git merge-base $SOURCE_BRANCH $DESTINATION_BRANCH)"
         MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse $SOURCE_BRANCH)"
