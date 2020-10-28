@@ -1,15 +1,15 @@
 
 # This is a basic workflow to help you get started with Actions
 
-name: Docker Build and Push
+name: Docker Build and Push 
 
 # Controls when the action will run.
 on:
   push:
-    branches: [ master, feature/**, develop, qa, mock-prod, prod ]  
+    branches: [ master, feature/**, develop, qa, mock-prod, prod ]    
     paths:
       - 'containers/**'
-      - '.github/workflows/build.yml'
+      - '.github/workflows/build.yml' 
   
   pull_request:
 
@@ -19,9 +19,43 @@ defaults:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+
+  checkpoint:
+    if: github.event_name == 'push'
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    
+    - name: check branch
+      run: git branch
+    
+    - name: verify mergability
+      run: |   
+        SOURCE_BRANCH=origin/feature/new
+        DESTINATION_BRANCH=${GITHUB_REF#refs/heads/}        
+                
+        MERGE_BASE="$(git merge-base $SOURCE_BRANCH $DESTINATION_BRANCH)"
+        MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse $SOURCE_BRANCH)"
+        
+        SOURCE_BRANCH_NAME=$(echo $SOURCE_BRANCH | cut -d '/' -f2-)
+        
+        if [ "$MERGE_BASE" = "$MERGE_SOURCE_CURRENT_COMMIT" ]; 
+        then
+          echo "'$SOURCE_BRANCH_NAME' branch is merged with '$DESTINATION_BRANCH'"
+        else
+          echo "'$SOURCE_BRANCH_NAME' branch is not completely merged with '$DESTINATION_BRANCH'";
+          exit 1;
+        fi
+    
+
   test:
     if: github.ref == 'refs/heads/qa' && github.event_name == 'push' || github.event_name == 'pull_request'
-    
+
     runs-on: ubuntu-latest
 #    strategy:
 #      matrix:
@@ -82,8 +116,9 @@ jobs:
   
   # This workflow contains a single job called "build"
   build:
-    needs: test
-    if: always() && github.event_name == 'push'
+#    needs: test
+#    if: always() && github.event_name == 'push'
+    needs: checkpoint
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     
