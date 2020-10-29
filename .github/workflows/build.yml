@@ -36,14 +36,13 @@ jobs:
     
     - name: Step that prints name of pull request's base branch
       run: |
-        echo "Pull request's base branch is: ${BASE_BRANCH}"
-      env:
-        BASE_BRANCH: ${{ github.base_ref }}
+        echo "Pull request's base branch is: ${{ github.base_ref }}"
+        echo "Source branch is : ${{github.head_ref}}"
     
     - name: verify mergeability
       run: |   
         SOURCE_BRANCH=origin/feature/new
-        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}        
+        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}    
                 
         MERGE_BASE="$(git merge-base $SOURCE_BRANCH $CURRENT_BRANCH)"
         MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse $SOURCE_BRANCH)"
