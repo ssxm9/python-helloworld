@@ -21,7 +21,7 @@ defaults:
 jobs:
 
   checkpoint:
-    if: github.event_name == 'push'
+    if: github.event_name == 'pull_request'
     
     runs-on: ubuntu-latest
     
@@ -33,6 +33,12 @@ jobs:
     
     - name: check branch
       run: git branch
+    
+    - name: Step that prints name of pull request's base branch
+      run: |
+        echo "Pull request's base branch is: ${BASE_BRANCH}"
+      env:
+        BASE_BRANCH: ${{ github.base_ref }}
     
     - name: verify mergeability
       run: |   
