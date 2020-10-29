@@ -43,7 +43,7 @@ jobs:
       run: |   
         SOURCE_BRANCH=origin/${{github.head_ref}}
         echo $SOURCE_BRANCH
-        DESTINATION_BRANCH=${{ github.base_ref }}   
+        DESTINATION_BRANCH=origin/${{ github.base_ref }}   
         echo $DESTINATION_BRANCH
                 
         MERGE_BASE="$(git merge-base $SOURCE_BRANCH $DESTINATION_BRANCH)"
