@@ -43,9 +43,7 @@ jobs:
       id: mergeability
       run: |   
         SOURCE_BRANCH=origin/${{github.head_ref}}
-        echo $SOURCE_BRANCH
         DESTINATION_BRANCH=origin/${{ github.base_ref }}   
-        echo $DESTINATION_BRANCH
                 
         if [[ -z $(git diff $SOURCE_BRANCH $DESTINATION_BRANCH) ]]; 
         then
