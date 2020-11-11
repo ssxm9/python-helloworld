@@ -46,12 +46,7 @@ jobs:
         DESTINATION_BRANCH=origin/${{ github.base_ref }}   
         echo $DESTINATION_BRANCH
                 
-        MERGE_BASE="$(git merge-base $SOURCE_BRANCH $DESTINATION_BRANCH)"
-        echo $MERGE_BASE
-        MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse $SOURCE_BRANCH)"
-        echo $MERGE_SOURCE_CURRENT_COMMIT
-                
-        if [ "$MERGE_BASE" = "$MERGE_SOURCE_CURRENT_COMMIT" ]; 
+        if [[ -z $(git diff $SOURCE_BRANCH $CURRENT_BRANCH ]]; 
         then
           echo "'$SOURCE_BRANCH' branch is merged with '$CURRENT_BRANCH'"
         else
