@@ -54,6 +54,9 @@ jobs:
           echo "'$SOURCE_BRANCH' branch is not completely merged with '$DESTINATION_BRANCH'";
         fi
         
+    - name: check op
+      run: echo "${{ steps.mergeability.outputs.stdout }}"
+      
     - name: Update Pull Request
       uses: actions/github-script@0.9.0
       if: github.event_name == 'pull_request' && always()
