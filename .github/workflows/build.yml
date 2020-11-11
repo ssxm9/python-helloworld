@@ -47,7 +47,7 @@ jobs:
         DESTINATION_BRANCH=origin/${{ github.base_ref }}   
         echo $DESTINATION_BRANCH
                 
-        if [[ -z $(git diff $SOURCE_BRANCH $CURRENT_BRANCH) ]]; 
+        if [[ -z $(git diff $SOURCE_BRANCH $DESTINATION_BRANCH) ]]; 
         then
           echo "'$SOURCE_BRANCH' branch is completely merged with '$DESTINATION_BRANCH'"
         else
@@ -60,7 +60,7 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const output = `#### Mergeability - ${{ steps.mergeability.outputs.stdout }}`
+          const output = `#### Mergeability - "${{ steps.mergeability.outputs.stdout }}"`
           github.issues.createComment({
              issue_number: context.issue.number,
              owner: context.repo.owner,
