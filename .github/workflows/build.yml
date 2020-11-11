@@ -6,7 +6,7 @@ name: Docker Build and Push
 # Controls when the action will run.
 on:
   push:
-    branches: [ master, feature/**, develop, qa, mock-prod, prod ]    
+    branches: [ master, feature/**, develop, qa, mock-prod, prod ] 
     paths:
       - 'containers/**'
       - '.github/workflows/build.yml' 
@@ -21,7 +21,7 @@ defaults:
 jobs:
 
   checkpoint:
-    if: github.event_name == 'push'
+    if: github.event_name == 'pull_request'
     
     runs-on: ubuntu-latest
     
@@ -34,23 +34,58 @@ jobs:
     - name: check branch
       run: git branch
     
-    - name: verify mergability
+    - name: Step that prints name of pull request's base branch
+      run: |
+        echo "Pull request's base branch is: ${{ github.base_ref }}"
+        echo "Source branch is : ${{github.head_ref}}"
+        
+    - name: verify mergeability
+      id: mergeability
       run: |   
-        SOURCE_BRANCH=origin/feature/new
-        DESTINATION_BRANCH=${GITHUB_REF#refs/heads/}        
+        SOURCE_BRANCH=origin/${{github.head_ref}}
+        DESTINATION_BRANCH=origin/${{ github.base_ref }}   
                 
-        MERGE_BASE="$(git merge-base $SOURCE_BRANCH $DESTINATION_BRANCH)"
-        MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse $SOURCE_BRANCH)"
-        
-        SOURCE_BRANCH_NAME=$(echo $SOURCE_BRANCH | cut -d '/' -f2-)
-        
-        if [ "$MERGE_BASE" = "$MERGE_SOURCE_CURRENT_COMMIT" ]; 
+        if [[ -z $(git diff $SOURCE_BRANCH $DESTINATION_BRANCH) ]]; 
         then
-          echo "'$SOURCE_BRANCH_NAME' branch is merged with '$DESTINATION_BRANCH'"
+          echo "'$SOURCE_BRANCH' branch is completely merged with '$DESTINATION_BRANCH'"
         else
-          echo "'$SOURCE_BRANCH_NAME' branch is not completely merged with '$DESTINATION_BRANCH'";
-          exit 1;
+          echo "'$SOURCE_BRANCH' branch is not completely merged with '$DESTINATION_BRANCH'";
         fi
+        
+    - name: check op
+      run: echo "${{ steps.mergeability.outputs.stdout }}"
+      
+    - name: Update Pull Request
+      uses: actions/github-script@0.9.0
+      if: github.event_name == 'pull_request' && always()
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const output = `#### Mergeability - "${{ steps.mergeability.outputs.stdout }}"`
+          github.issues.createComment({
+             issue_number: context.issue.number,
+             owner: context.repo.owner,
+             repo: context.repo.repo,
+             body: output
+          })
+    
+ #   - name: verify mergeability
+ #     run: |   
+ #       SOURCE_BRANCH=origin/feature/new
+ #       CURRENT_BRANCH=${GITHUB_REF#refs/heads/}    
+ #               
+ #       MERGE_BASE="$(git merge-base $SOURCE_BRANCH $CURRENT_BRANCH)"
+ #       MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse $SOURCE_BRANCH)"
+ #       
+ #       SOURCE_BRANCH_NAME=$(echo $SOURCE_BRANCH | cut -d '/' -f2-)
+ #       
+ #       if [ "$MERGE_BASE" = "$MERGE_SOURCE_CURRENT_COMMIT" ]; 
+ #       then
+ #         echo "'$SOURCE_BRANCH_NAME' branch is merged with '$CURRENT_BRANCH'"
+ #       else
+ #         echo "'$SOURCE_BRANCH_NAME' branch is not completely merged with '$CURRENT_BRANCH'";
+ #         exit 1;
+ #       fi
     
 
   test:
