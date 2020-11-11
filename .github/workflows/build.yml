@@ -63,7 +63,13 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          console.log(process.env.MERGED)
+          github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Mergeability - console.log(process.env.MERGED)'
+            })
+          
     
  #   - name: verify mergeability
  #     run: |   
