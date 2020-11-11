@@ -47,7 +47,7 @@ jobs:
         DESTINATION_BRANCH=origin/${{ github.base_ref }}   
         echo $DESTINATION_BRANCH
                 
-        if [[ -z $(git diff $SOURCE_BRANCH $CURRENT_BRANCH ]]; 
+        if [[ -z $(git diff $SOURCE_BRANCH $CURRENT_BRANCH) ]]; 
         then
           echo "'$SOURCE_BRANCH' branch is completely merged with '$CURRENT_BRANCH'"
         else
@@ -57,24 +57,10 @@ jobs:
     - name: Update Pull Request
       uses: actions/github-script@0.9.0
       if: github.event_name == 'pull_request' && always()
-      env:
-        MERGED: "${{ steps.mergeability.outputs.stdout }}"
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const output = `#### Merged or not merged`
-          <details><summary>Show Formatting Output</summary>
-          
-           \`\`\`${process.env.MERGED}\`\`\`
-           
-          </details>
-        
-          github.issues.createComment({
-             issue_number: context.issue.number,
-             owner: context.repo.owner,
-             repo: context.repo.repo,
-             body: output
-          })
+          const output = `#### Mergeability - ${{ steps.mergeability.outputs.stdout }}`
     
  #   - name: verify mergeability
  #     run: |   
