@@ -40,6 +40,7 @@ jobs:
         echo "Source branch is : ${{github.head_ref}}"
         
     - name: verify mergeability
+      id: mergeability
       run: |   
         SOURCE_BRANCH=origin/${{github.head_ref}}
         echo $SOURCE_BRANCH
@@ -48,11 +49,32 @@ jobs:
                 
         if [[ -z $(git diff $SOURCE_BRANCH $CURRENT_BRANCH ]]; 
         then
-          echo "'$SOURCE_BRANCH' branch is merged with '$CURRENT_BRANCH'"
+          echo "'$SOURCE_BRANCH' branch is completely merged with '$CURRENT_BRANCH'"
         else
           echo "'$SOURCE_BRANCH' branch is not completely merged with '$CURRENT_BRANCH'";
-          exit 1;
         fi
+        
+    - name: Update Pull Request
+      uses: actions/github-script@0.9.0
+      if: github.event_name == 'pull_request' && always()
+      env:
+        MERGED: "${{ steps.mergeability.outputs.stdout }}"
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const output = `#### Merged or not merged`
+          <details><summary>Show Formatting Output</summary>
+          
+           \`\`\`${process.env.MERGED}\`\`\`
+           
+          </details>
+        
+          github.issues.createComment({
+             issue_number: context.issue.number,
+             owner: context.repo.owner,
+             repo: context.repo.repo,
+             body: output
+          })
     
  #   - name: verify mergeability
  #     run: |   
