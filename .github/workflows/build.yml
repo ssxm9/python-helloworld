@@ -49,7 +49,7 @@ jobs:
            
         if [ $DESTINATION_BRANCH == qa ];
          then
-           if [[ -z $(git diff $SOURCE_BRANCH_NAME develop) ]]; 
+           if [[ -z $(git diff $SOURCE_BRANCH_NAME origin/develop) ]]; 
            then
              echo "'$SOURCE_BRANCH_NAME' branch is completely merged with 'develop' branch"
            else
@@ -60,7 +60,7 @@ jobs:
           
         elif [ $DESTINATION_BRANCH == mock-prod ];
          then
-           if [[ -z $(git diff $SOURCE_BRANCH_NAME qa) ]]; 
+           if [[ -z $(git diff $SOURCE_BRANCH_NAME origin/qa) ]]; 
            then
              echo "'$SOURCE_BRANCH_NAME' branch is completely merged with 'qa' branch"
            else
@@ -71,7 +71,7 @@ jobs:
           
         elif [ $DESTINATION_BRANCH == prod ];
          then
-           if [[ -z $(git diff $SOURCE_BRANCH_NAME mock-prod) ]]; 
+           if [[ -z $(git diff $SOURCE_BRANCH_NAME origin/mock-prod) ]]; 
            then
              echo "'$SOURCE_BRANCH_NAME' branch is completely merged with 'mock-prod' branch"
            else
