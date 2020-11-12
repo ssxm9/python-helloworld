@@ -42,33 +42,65 @@ jobs:
     - name: verify mergeability
       id: mergeability
       run: |   
-        SOURCE_BRANCH=origin/${{github.head_ref}}
-        DESTINATION_BRANCH=origin/${{ github.base_ref }}   
-                
-        if [[ -z $(git diff $SOURCE_BRANCH $DESTINATION_BRANCH) ]]; 
-        then
-          echo "'$SOURCE_BRANCH' branch is completely merged with '$DESTINATION_BRANCH'"
+        SOURCE_BRANCH_NAME=origin/${{github.head_ref}}
+        DESTINATION_BRANCH_NAME=origin/${{ github.base_ref }}
+        
+        DESTINATION_BRANCH=$(echo $DESTINATION_BRANCH_NAME | cut -d '/' -f2-)   
+           
+        if [ $DESTINATION_BRANCH == qa ];
+         then
+           if [[ -z $(git diff $SOURCE_BRANCH_NAME develop) ]]; 
+           then
+             echo "'$SOURCE_BRANCH_NAME' branch is completely merged with 'develop' branch"
+           else
+             echo "'$SOURCE_BRANCH_NAME' branch is not completely merged with 'develop'";
+             COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^develop)
+             echo "$COMMITS from '$SOURCE_BRANCH_NAME' are not yet merged to 'develop'";
+           fi
+          
+        elif [ $DESTINATION_BRANCH == mock-prod ];
+         then
+           if [[ -z $(git diff $SOURCE_BRANCH_NAME qa) ]]; 
+           then
+             echo "'$SOURCE_BRANCH_NAME' branch is completely merged with 'qa' branch"
+           else
+             echo "'$SOURCE_BRANCH_NAME' branch is not completely merged with 'qa'";
+             COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^qa)
+             echo "$COMMITS from '$SOURCE_BRANCH_NAME' are not yet merged to 'qa'";
+           fi
+          
+        elif [ $DESTINATION_BRANCH == prod ];
+         then
+           if [[ -z $(git diff $SOURCE_BRANCH_NAME mock-prod) ]]; 
+           then
+             echo "'$SOURCE_BRANCH_NAME' branch is completely merged with 'mock-prod' branch"
+           else
+             echo "'$SOURCE_BRANCH_NAME' branch is not completely merged with 'mock-prod'";
+             COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^mock-prod)
+             echo "$COMMITS from '$SOURCE_BRANCH_NAME' are not yet merged to 'mock-prod'";
+           fi
+         
         else
-          echo "'$SOURCE_BRANCH' branch is not completely merged with '$DESTINATION_BRANCH'";
+          echo "raise pull request to the correct branch"
         fi
         
-    - name: check op
-      run: echo "${{ steps.mergeability.outputs.stdout }}"
+#    - name: check op
+#      run: echo "${{ steps.mergeability.outputs.stdout }}"
       
-    - name: Update Pull Request
-      uses: actions/github-script@0.9.0
-      if: github.event_name == 'pull_request' && always()
-      env: 
-        MERGED: "{{ steps.mergeability.outputs.stdout }}"
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: 'Mergeability - console.log(process.env.MERGED)'
-            })
+#    - name: Update Pull Request
+#      uses: actions/github-script@0.9.0
+#      if: github.event_name == 'pull_request' && always()
+#      env: 
+#        MERGED: "{{ steps.mergeability.outputs.stdout }}"
+#      with:
+#        github-token: ${{ secrets.GITHUB_TOKEN }}
+#        script: |
+#          github.issues.createComment({
+#              issue_number: context.issue.number,
+#              owner: context.repo.owner,
+#              repo: context.repo.repo,
+#              body: 'Mergeability - console.log(process.env.MERGED)'
+#            })
           
     
  #   - name: verify mergeability
