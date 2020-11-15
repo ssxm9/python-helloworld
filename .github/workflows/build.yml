@@ -72,45 +72,7 @@ jobs:
              exit 1;
            fi
           
-        elif [ $DESTINATION_BRANCH == mock-prod ];
-         then
-           if [[ -z $(git diff $SOURCE_BRANCH_NAME origin/qa) ]]; 
-           then
-             OUTPUT=$(echo "'$SOURCE_BRANCH' branch is completely merged with 'qa' branch")
-             echo "::set-output name=MERGEABILITY::$OUTPUT"
-           else
-             COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa)
-             NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa | wc -l)
-
-             OUTPUT="$(cat <<-EOF
-               Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'qa'
-               $COMMITS
-             EOF
-             )"
-             
-             echo "::set-output name=MERGEABILITY::$OUTPUT"
-             exit 1;
-           fi
-          
-        elif [ $DESTINATION_BRANCH == prod ];
-         then
-           if [[ -z $(git diff $SOURCE_BRANCH_NAME origin/mock-prod) ]]; 
-           then
-             OUTPUT=$(echo "'$SOURCE_BRANCH' branch is completely merged with 'mock-prod' branch")
-             echo "::set-output name=MERGEABILITY::$OUTPUT"
-           else
-             COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/mock-prod)
-             NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/mock-prod | wc -l)
-             
-             OUTPUT="$(cat <<-EOF
-                Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'mock-prod'
-                $COMMITS
-             EOF
-             )"
-             
-             echo "::set-output name=MERGEABILITY::$OUTPUT"
-             exit 1;
-           fi
+        
          
         else
           echo "raise pull request to the correct branch"
