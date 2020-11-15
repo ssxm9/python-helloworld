@@ -63,10 +63,10 @@ jobs:
              NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop | wc -l)
              
              OUTPUT="$(cat <<-EOF
-             Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'develop'
-             $COMMITS
-           EOF
-           )"
+               Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'develop'
+               $COMMITS
+             EOF
+             )"
              
              echo "::set-output name=MERGEABILITY::$OUTPUT"
              exit 1;
@@ -83,10 +83,10 @@ jobs:
              NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa | wc -l)
 
              OUTPUT="$(cat <<-EOF
-             Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'qa'
-             $COMMITS
-           EOF
-           )"
+               Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'qa'
+               $COMMITS
+             EOF
+             )"
              
              echo "::set-output name=MERGEABILITY::$OUTPUT"
              exit 1;
@@ -103,10 +103,10 @@ jobs:
              NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/mock-prod | wc -l)
              
              OUTPUT="$(cat <<-EOF
-             Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'mock-prod'
-             $COMMITS
-           EOF
-           )"
+               Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'mock-prod'
+               $COMMITS
+             EOF
+             )"
              
              echo "::set-output name=MERGEABILITY::$OUTPUT"
              exit 1;
