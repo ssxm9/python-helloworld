@@ -45,6 +45,7 @@ jobs:
         SOURCE_BRANCH_NAME=origin/${{github.head_ref}}
         DESTINATION_BRANCH_NAME=origin/${{ github.base_ref }}
         
+        SOURCE_BRANCH==$(echo $SOURCE_BRANCH_NAME | cut -d '/' -f2-)
         DESTINATION_BRANCH=$(echo $DESTINATION_BRANCH_NAME | cut -d '/' -f2-)   
            
         if [ $DESTINATION_BRANCH == develop ];
@@ -55,10 +56,12 @@ jobs:
          then
            if [[ -z $(git diff $SOURCE_BRANCH_NAME origin/develop) ]]; 
            then
-             echo "'$SOURCE_BRANCH_NAME' branch is completely merged with 'develop' branch"
+             echo "'$SOURCE_BRANCH' branch is completely merged with 'develop' branch"
            else
              COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop)
-             echo "Below commits of '$SOURCE_BRANCH_NAME' are not yet merged to 'develop'";
+             NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop | wc -l)
+             
+             echo "Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'develop'";
              echo "$COMMITS ";
              exit 1;
            fi
@@ -67,10 +70,12 @@ jobs:
          then
            if [[ -z $(git diff $SOURCE_BRANCH_NAME origin/qa) ]]; 
            then
-             echo "'$SOURCE_BRANCH_NAME' branch is completely merged with 'qa' branch"
+             echo "'$SOURCE_BRANCH' branch is completely merged with 'qa' branch"
            else
              COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa)
-             echo "Below commits of '$SOURCE_BRANCH_NAME' are not yet merged to 'qa'";
+             NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa | wc -l)
+
+             echo "Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'qa'";
              echo "$COMMITS ";
              exit 1;
            fi
@@ -79,10 +84,12 @@ jobs:
          then
            if [[ -z $(git diff $SOURCE_BRANCH_NAME origin/mock-prod) ]]; 
            then
-             echo "'$SOURCE_BRANCH_NAME' branch is completely merged with 'mock-prod' branch"
+             echo "'$SOURCE_BRANCH' branch is completely merged with 'mock-prod' branch"
            else
              COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/mock-prod)
-             echo "Below commits of '$SOURCE_BRANCH_NAME' are not yet merged to 'mock-prod'";
+             NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/mock-prod | wc -l)
+             
+             echo "Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'mock-prod'";
              echo "$COMMITS ";
              exit 1;
            fi
