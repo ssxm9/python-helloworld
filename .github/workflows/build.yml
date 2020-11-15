@@ -79,7 +79,7 @@ jobs:
              NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa | wc -l)
 
              OUTPUT=$(echo "Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'qa'
-                           $COMMITS")
+                      $COMMITS")
              echo "::set-output name=MERGEABILITY::$OUTPUT"
              exit 1;
            fi
@@ -95,7 +95,7 @@ jobs:
              NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/mock-prod | wc -l)
              
              OUTPUT=$(echo "Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'mock-prod'
-                            $COMMITS")
+                      $COMMITS")
              echo "::set-output name=MERGEABILITY::$OUTPUT"
              exit 1;
            fi
@@ -105,6 +105,7 @@ jobs:
         fi
         
     - name: check op
+      if: github.event_name == 'pull_request' && always()
       run: echo "${{ steps.mergeability.outputs.MERGEABILITY }}"
       
 #    - name: Update Pull Request
