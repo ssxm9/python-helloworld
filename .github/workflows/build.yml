@@ -45,7 +45,7 @@ jobs:
         SOURCE_BRANCH_NAME=origin/${{github.head_ref}}
         DESTINATION_BRANCH_NAME=origin/${{ github.base_ref }}
         
-        SOURCE_BRANCH==$(echo $SOURCE_BRANCH_NAME | cut -d '/' -f2-)
+        SOURCE_BRANCH=$(echo $SOURCE_BRANCH_NAME | cut -d '/' -f2-)
         DESTINATION_BRANCH=$(echo $DESTINATION_BRANCH_NAME | cut -d '/' -f2-)   
            
         if [ $DESTINATION_BRANCH == develop ];
@@ -63,7 +63,8 @@ jobs:
              NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop | wc -l)
              
              OUTPUT=$(echo "Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'develop'
-                           $COMMITS")
+             $COMMITS")
+             
              echo "::set-output name=MERGEABILITY::$OUTPUT"
              exit 1;
            fi
@@ -79,7 +80,8 @@ jobs:
              NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa | wc -l)
 
              OUTPUT=$(echo "Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'qa'
-                      $COMMITS")
+             $COMMITS")
+             
              echo "::set-output name=MERGEABILITY::$OUTPUT"
              exit 1;
            fi
@@ -95,7 +97,8 @@ jobs:
              NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/mock-prod | wc -l)
              
              OUTPUT=$(echo "Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'mock-prod'
-                      $COMMITS")
+             $COMMITS")
+             
              echo "::set-output name=MERGEABILITY::$OUTPUT"
              exit 1;
            fi
