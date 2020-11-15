@@ -62,8 +62,8 @@ jobs:
              COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop)
              NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop | wc -l)
              
-             OUTPUT=$(echo "Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'develop'
-             $COMMITS")
+             OUTPUT=$"Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'develop'
+             $COMMITS"
              
              echo "::set-output name=MERGEABILITY::$OUTPUT"
              exit 1;
@@ -79,8 +79,8 @@ jobs:
              COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa)
              NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa | wc -l)
 
-             OUTPUT=$(echo "Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'qa'
-             $COMMITS")
+             OUTPUT=$"Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'qa'
+             $COMMITS"
              
              echo "::set-output name=MERGEABILITY::$OUTPUT"
              exit 1;
