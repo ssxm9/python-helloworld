@@ -62,8 +62,8 @@ jobs:
              COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop)
              NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop | wc -l)
              
-             OUTPUT="Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'develop'"
-             OUTPUT="$COMMITS"
+             OUTPUT="$(Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'develop')"
+             OUTPUT="$($COMMITS)"
                       
              echo "::set-output name=MERGEABILITY::$OUTPUT"
              exit 1;
