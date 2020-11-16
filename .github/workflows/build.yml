@@ -135,7 +135,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: `#### Verify Mergeability 📖 - 
-                    `${{steps.mergeability.outputs.MERGEABILITY}}</pre>`
+                    `${{steps.mergeability.outputs.MERGEABILITY}}`
             })
           
     
