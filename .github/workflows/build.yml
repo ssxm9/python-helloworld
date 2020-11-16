@@ -62,15 +62,14 @@ jobs:
              COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop)
              NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop | wc -l)
              
-             OUTPUT=$(cat <<-EOF
-             Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'develop'
-             $COMMITS
-             EOF
-             )
+             OUTPUT="Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'develop'\n
+                    $COMMITS"
              
              OUTPUT="${OUTPUT//'%'/'%25'}"
              OUTPUT="${OUTPUT//$'\n'/'%0A'}"
              OUTPUT="${OUTPUT//$'\r'/'%0D'}"
+             
+             echo $OUTPUT
                       
              echo "::set-output name=MERGEABILITY::$OUTPUT"
              exit 1;
