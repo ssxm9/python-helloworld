@@ -1,6 +1,6 @@
 
 # This is a basic workflow to help you get started with Actions
-
+ 
 name: Docker Build and Push 
 
 # Controls when the action will run.
@@ -42,32 +42,102 @@ jobs:
     - name: verify mergeability
       id: mergeability
       run: |   
-        SOURCE_BRANCH=origin/${{github.head_ref}}
-        DESTINATION_BRANCH=origin/${{ github.base_ref }}   
-                
-        if [[ -z $(git diff $SOURCE_BRANCH $DESTINATION_BRANCH) ]]; 
-        then
-          echo "'$SOURCE_BRANCH' branch is completely merged with '$DESTINATION_BRANCH'"
-        else
-          echo "'$SOURCE_BRANCH' branch is not completely merged with '$DESTINATION_BRANCH'";
-        fi
+        SOURCE_BRANCH_NAME=origin/${{github.head_ref}}
+        DESTINATION_BRANCH_NAME=origin/${{ github.base_ref }}
         
-    - name: check op
-      run: echo "${{ steps.mergeability.outputs.stdout }}"
+        SOURCE_BRANCH=$(echo $SOURCE_BRANCH_NAME | cut -d '/' -f2-)
+        DESTINATION_BRANCH=$(echo $DESTINATION_BRANCH_NAME | cut -d '/' -f2-)   
+           
+        if [ $DESTINATION_BRANCH == develop ];
+         then
+           echo "PR is raised to develop branch";
+           
+        elif [ $DESTINATION_BRANCH == qa ];
+         then
+           if [[ -z $(git diff $SOURCE_BRANCH_NAME origin/develop) ]]; 
+           then
+             OUTPUT=$(echo "'$SOURCE_BRANCH' branch is completely merged with 'develop' branch")
+             echo "::set-output name=MERGEABILITY::$OUTPUT"
+           else
+             COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop)
+             NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop | wc -l)
+             
+             OUTPUT="Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'develop' -
+             
+        $COMMITS"
+             
+             OUTPUT="${OUTPUT//'%'/'%25'}"
+             OUTPUT="${OUTPUT//$'\n'/'%0A'}"
+             OUTPUT="${OUTPUT//$'\r'/'%0D'}"
+                                   
+             echo "::set-output name=MERGEABILITY::$OUTPUT"
+             exit 1;
+           fi
+          
+        elif [ $DESTINATION_BRANCH == mock-prod ];
+         then
+           if [[ -z $(git diff $SOURCE_BRANCH_NAME origin/qa) ]]; 
+           then
+             OUTPUT=$(echo "'$SOURCE_BRANCH' branch is completely merged with 'qa' branch")
+             echo "::set-output name=MERGEABILITY::$OUTPUT"
+           else
+             COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa)
+             NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa | wc -l)
+
+             OUTPUT="Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'qa' -
+             
+        $COMMITS"
+             
+             OUTPUT="${OUTPUT//'%'/'%25'}"
+             OUTPUT="${OUTPUT//$'\n'/'%0A'}"
+             OUTPUT="${OUTPUT//$'\r'/'%0D'}"
+                          
+             echo "::set-output name=MERGEABILITY::$OUTPUT"
+             exit 1;
+           fi
+          
+        elif [ $DESTINATION_BRANCH == prod ];
+         then
+           if [[ -z $(git diff $SOURCE_BRANCH_NAME origin/mock-prod) ]]; 
+           then
+             OUTPUT=$(echo "'$SOURCE_BRANCH' branch is completely merged with 'mock-prod' branch")
+             echo "::set-output name=MERGEABILITY::$OUTPUT"
+           else
+             COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/mock-prod)
+             NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/mock-prod | wc -l)
+             
+             OUTPUT="Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'mock-prod' -
+             
+        $COMMITS"
+             
+             OUTPUT="${OUTPUT//'%'/'%25'}"
+             OUTPUT="${OUTPUT//$'\n'/'%0A'}"
+             OUTPUT="${OUTPUT//$'\r'/'%0D'}"
+                        
+             echo "::set-output name=MERGEABILITY::$OUTPUT"
+             exit 1;
+           fi
+         
+        else
+          echo "raise pull request to the correct branch"
+        fi
       
     - name: Update Pull Request
       uses: actions/github-script@0.9.0
       if: github.event_name == 'pull_request' && always()
+      env: 
+        MERGED: "{{ steps.mergeability.outputs.stdout }}"
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const output = `#### Mergeability - "${{ steps.mergeability.outputs.stdout }}"`
           github.issues.createComment({
-             issue_number: context.issue.number,
-             owner: context.repo.owner,
-             repo: context.repo.repo,
-             body: output
-          })
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `#### Verify Mergeability 📖 - 
+                 ${{steps.mergeability.outputs.MERGEABILITY}}`
+            })
+          
     
  #   - name: verify mergeability
  #     run: |   
