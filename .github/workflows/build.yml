@@ -62,7 +62,7 @@ jobs:
              COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop)
              NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop | wc -l)
              
-             OUTPUT=$(cat << EOF
+             OUTPUT=$(cat <<-EOF
              Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'develop'
              $COMMITS
              EOF
@@ -86,7 +86,7 @@ jobs:
              COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa)
              NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa | wc -l)
 
-             OUTPUT=$(cat << EOF
+             OUTPUT=$(cat <<-EOF
              Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'qa'
              $COMMITS
              EOF
@@ -110,7 +110,7 @@ jobs:
              COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/mock-prod)
              NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/mock-prod | wc -l)
              
-             OUTPUT=$(cat << EOF
+             OUTPUT=$(cat <<-EOF
              Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'mock-prod'
              $COMMITS
              EOF
