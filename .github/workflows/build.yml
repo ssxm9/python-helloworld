@@ -65,8 +65,8 @@ jobs:
              OUTPUT="$(cat <<-EOF
                Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'develop'
                $COMMITS
-             EOF
-             )"
+         EOF
+         )"
              
              echo "::set-output name=MERGEABILITY::$OUTPUT"
              exit 1;
@@ -85,8 +85,8 @@ jobs:
              OUTPUT="$(cat <<-EOF
                Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'qa'
                $COMMITS
-             EOF
-             )"
+         EOF
+         )"
              
              echo "::set-output name=MERGEABILITY::$OUTPUT"
              exit 1;
@@ -105,8 +105,8 @@ jobs:
              OUTPUT="$(cat <<-EOF
                Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'mock-prod'
                $COMMITS
-             EOF
-             )"
+         EOF
+         )"
              
              echo "::set-output name=MERGEABILITY::$OUTPUT"
              exit 1;
