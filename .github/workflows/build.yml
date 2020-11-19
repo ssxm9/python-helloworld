@@ -21,7 +21,7 @@ defaults:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
 
-  checkpoint:
+  mergeability:
     if: github.event_name == 'pull_request'
     
     runs-on: ubuntu-latest
@@ -35,7 +35,7 @@ jobs:
     - name: check branch
       run: git branch
     
-    - name: Step that prints name of pull request's base branch
+    - name: step that prints name of pull request's base branch
       run: |
         echo "Pull request's base branch is: ${{ github.base_ref }}"
         echo "Source branch is : ${{github.head_ref}}"
@@ -63,7 +63,7 @@ jobs:
              COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop)
              NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop | wc -l)
              
-             OUTPUT="Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'develop' -
+             OUTPUT="Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' branch are not yet merged to 'develop' branch -
              
         $COMMITS"
              
@@ -85,7 +85,7 @@ jobs:
              COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa)
              NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa | wc -l)
 
-             OUTPUT="Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'qa' -
+             OUTPUT="Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' branch are not yet merged to 'qa' branch -
              
         $COMMITS"
              
@@ -107,7 +107,7 @@ jobs:
              COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/mock-prod)
              NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/mock-prod | wc -l)
              
-             OUTPUT="Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'mock-prod' -
+             OUTPUT="Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' branch are not yet merged to 'mock-prod' branch -
              
         $COMMITS"
              
@@ -224,7 +224,7 @@ jobs:
   build:
 #    needs: test
 #    if: always() && github.event_name == 'push'
-    needs: checkpoint
+#    needs: mergeability
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     
