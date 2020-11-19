@@ -21,7 +21,7 @@ defaults:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
 
-  mergeability:
+  checkpoint:
     if: github.event_name == 'pull_request'
     
     runs-on: ubuntu-latest
