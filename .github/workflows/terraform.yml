@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      PROJECT_ID: 'playground-s-11-a73aca28'
+      PROJECT_ID: 'playground-s-11-4a5b1a8b'
     
     steps:
     
@@ -40,19 +40,19 @@ jobs:
         
         if [ $CURRENT_BRANCH == develop ] || [ `echo ${CURRENT_BRANCH::7}` == feature ];
          then
-           echo ::set-env name=ENV::dev
+           echo "ENV=dev" >> $GITHUB_ENV
           
         elif [ $CURRENT_BRANCH == qa ];
          then
-           echo ::set-env name=ENV::qa
+           echo "ENV=qa" >> $GITHUB_ENV
 
         elif [ $CURRENT_BRANCH == mock-prod ];
          then
-           echo ::set-env name=ENV::mck-prd
-          
+           echo "ENV=mck-prd" >> $GITHUB_ENV
+
         elif [ $CURRENT_BRANCH == prod ];
          then
-           echo ::set-env name=ENV::prd
+           echo "ENV=prd" >> $GITHUB_ENV
          
         else
            echo "merge to correct branch"
@@ -63,10 +63,10 @@ jobs:
         echo ${{ env.PROJECT_ID }}
         echo ${{ env.ENV }}
         
-    - name: "Setup - Security Scan"
-      uses: triat/terraform-security-scan@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#    - name: "Setup - Security Scan"
+#      uses: triat/terraform-security-scan@v1
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
     - name: gcloud setup
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
