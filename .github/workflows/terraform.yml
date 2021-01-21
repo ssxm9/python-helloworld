@@ -99,7 +99,7 @@ jobs:
        
     - name: terraform fmt
       id: fmt
-      run: terraform fmt -no-color -check -recursive .
+      run: terraform fmt -no-color -recursive .
       continue-on-error: true
 
     - name: terraform init
