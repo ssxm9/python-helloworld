@@ -7,7 +7,7 @@ on:
       - feature/**
       - develop
       - qa
-      - mock_prod
+      - mock-prod
       - prod
     paths:
       - 'terraform/**'
