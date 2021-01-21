@@ -1,0 +1,181 @@
+name: Terraform
+ 
+on:
+  push:
+    branches:
+      - master
+      - feature/**
+      - develop
+      - qa
+      - mock_prod
+      - prod
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/terraform.yml'
+    
+  pull_request:
+#    paths:
+#      - 'terraform/**'
+#      - '.github/workflows/terraform.yml'
+  
+defaults:
+  run:
+    working-directory: terraform
+  
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    
+    env:
+      PROJECT_ID: 'playground-s-11-d58b69fb'
+    
+    steps:
+    
+    - name: checkout code
+      uses: actions/checkout@v2
+    
+    - name: setup env variables
+      run: |
+        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+        
+        if [ $CURRENT_BRANCH == develop ] || [ `echo ${CURRENT_BRANCH::7}` == feature ];
+         then
+           echo "ENV=dev" >> $GITHUB_ENV
+           echo "BACKEND_BUCKET=backend-dev1" >> $GITHUB_ENV
+          
+        elif [ $CURRENT_BRANCH == qa ];
+         then
+           echo "ENV=qa" >> $GITHUB_ENV
+           echo "BACKEND_BUCKET=backend-tst1" >> $GITHUB_ENV
+
+        elif [ $CURRENT_BRANCH == mock-prod ];
+         then
+           echo "ENV=mck-prd" >> $GITHUB_ENV
+           echo "BACKEND_BUCKET=backend-mck1" >> $GITHUB_ENV
+
+        elif [ $CURRENT_BRANCH == prod ];
+         then
+           echo "ENV=prd" >> $GITHUB_ENV
+           echo "BACKEND_BUCKET=backend-prd1" >> $GITHUB_ENV
+         
+        else
+           echo "merge to correct branch"
+        fi
+   
+    - name: check project id
+      run: |
+        echo ${{ env.PROJECT_ID }}
+        echo ${{ env.ENV }}
+        echo ${{ env.BACKEND_BUCKET }}
+        
+#    - name: "Setup - Security Scan"
+#      uses: triat/terraform-security-scan@v1
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+    - name: gcloud setup
+      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+          version: '290.0.1'
+          project_id: ${{ env.PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+          export_default_credentials: true
+      
+   # - name: activate service account 
+   #   env: 
+   #     SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+   #   run: |
+   #     echo "$SERVICE_ACCOUNT_KEY" > ${HOME}/gcloud.json
+   #     export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/gcloud.json"
+   #     gcloud --quiet auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS} --project=${{ env.PROJECT_ID }}
+
+    - name: setup terraform
+      uses: hashicorp/setup-terraform@v1
+      with: 
+        terraform_version: 0.13.5
+    
+    - name: terraform version
+      run: terraform version
+       
+    - name: terraform fmt
+      id: fmt
+      run: terraform fmt -no-color -check -recursive .
+      continue-on-error: true
+
+    - name: terraform init
+      id: init
+      run: terraform init -no-color -backend-config "prefix=${{ env.ENV }}" -backend-config "bucket=${{ env.BACKEND_BUCKET }}"
+
+    - name: terraform validate
+      id: validate
+      run: terraform validate -no-color
+
+    - name: terraform plan
+      id: plan
+      run: terraform plan -no-color -out=terraform.plan -var 'project_id=${{ env.PROJECT_ID }}' -var 'env=${{ env.ENV }}'
+ #     continue-on-error: true
+    
+   # - name: terraform show
+   #   run: terraform show terraform.plan > plan.txt
+   
+   # - name: upload artifact
+   #   uses: actions/upload-artifact@v2
+   #   with:
+   #     name: terraform plan
+   #     path: terraform/plan.txt
+   
+    - name: Update Pull Request
+      uses: actions/github-script@0.9.0
+      if: github.event_name == 'pull_request' && always()
+      env:
+        PLAN: "${{ steps.plan.outputs.stderr }}\n${{ steps.plan.outputs.stdout }}"
+        VALIDATE: "${{ steps.validate.outputs.stderr }}\n${{ steps.validate.outputs.stdout }}"
+        FMT: "${{ steps.fmt.outputs.stderr }}\n${{ steps.fmt.outputs.stdout }}"
+        INIT: "${{ steps.init.outputs.stderr }}\n${{ steps.init.outputs.stdout }}"
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+          <details><summary>Show Formatting Output</summary>
+          
+           \`\`\`${process.env.FMT}\`\`\`
+           
+          </details>
+        
+          #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+          <details><summary>Show Init Output</summary>
+          
+           \`\`\`${process.env.INIT}\`\`\`
+     
+          </details>
+          
+          #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+          <details><summary>Show Validate Output</summary>
+          
+          \`\`\`${process.env.VALIDATE}\`\`\`
+          
+          </details>
+          
+          #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+          <details><summary>Show Plan Output</summary>
+          
+          \`\`\`${process.env.PLAN}\`\`\`
+          
+          </details>
+          
+          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+        
+          github.issues.createComment({
+             issue_number: context.issue.number,
+             owner: context.repo.owner,
+             repo: context.repo.repo,
+             body: output
+          })
+
+#    - name: terraform plan status
+#      if: steps.plan.outcome == 'failure'
+#      run: exit 1
+       
+    - name: terraform apply
+      if: github.event_name == 'push'
+      run: terraform apply -auto-approve terraform.plan  

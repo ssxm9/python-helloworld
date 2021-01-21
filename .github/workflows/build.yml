@@ -1,0 +1,360 @@
+
+# This is a basic workflow to help you get started with Actions
+ 
+name: Docker Build and Push 
+
+# Controls when the action will run.
+on:
+  push:
+    branches: [ master, feature/**, develop, qa, mock-prod, prod ] 
+    paths:
+      - 'containers/**'
+      - '.github/workflows/build.yml' 
+  
+  pull_request:
+
+defaults:
+  run:
+    working-directory: containers
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+
+  checkpoint:
+    if: github.event_name == 'pull_request'
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    
+    - name: check branch
+      run: git branch
+    
+    - name: Step that prints name of pull request's base branch
+      run: |
+        echo "Pull request's base branch is: ${{ github.base_ref }}"
+        echo "Source branch is : ${{github.head_ref}}"
+        
+    - name: verify mergeability
+      id: mergeability
+      run: |   
+        SOURCE_BRANCH_NAME=origin/${{github.head_ref}}
+        DESTINATION_BRANCH_NAME=origin/${{ github.base_ref }}
+        
+        SOURCE_BRANCH=$(echo $SOURCE_BRANCH_NAME | cut -d '/' -f2-)
+        DESTINATION_BRANCH=$(echo $DESTINATION_BRANCH_NAME | cut -d '/' -f2-)   
+           
+        if [ $DESTINATION_BRANCH == develop ];
+         then
+           echo "PR is raised to develop branch";
+           
+        elif [ $DESTINATION_BRANCH == qa ];
+         then
+           if [[ -z $(git diff $SOURCE_BRANCH_NAME origin/develop) ]]; 
+           then
+             OUTPUT=$(echo "'$SOURCE_BRANCH' branch is completely merged with 'develop' branch")
+             echo "::set-output name=MERGEABILITY::$OUTPUT"
+           else
+             COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop)
+             NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop | wc -l)
+             
+             OUTPUT="Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'develop' -
+             
+        $COMMITS"
+             
+             OUTPUT="${OUTPUT//'%'/'%25'}"
+             OUTPUT="${OUTPUT//$'\n'/'%0A'}"
+             OUTPUT="${OUTPUT//$'\r'/'%0D'}"
+                                   
+             echo "::set-output name=MERGEABILITY::$OUTPUT"
+             exit 1;
+           fi
+          
+        elif [ $DESTINATION_BRANCH == mock-prod ];
+         then
+           if [[ -z $(git diff $SOURCE_BRANCH_NAME origin/qa) ]]; 
+           then
+             OUTPUT=$(echo "'$SOURCE_BRANCH' branch is completely merged with 'qa' branch")
+             echo "::set-output name=MERGEABILITY::$OUTPUT"
+           else
+             COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa)
+             NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa | wc -l)
+
+             OUTPUT="Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'qa' -
+             
+        $COMMITS"
+             
+             OUTPUT="${OUTPUT//'%'/'%25'}"
+             OUTPUT="${OUTPUT//$'\n'/'%0A'}"
+             OUTPUT="${OUTPUT//$'\r'/'%0D'}"
+                          
+             echo "::set-output name=MERGEABILITY::$OUTPUT"
+             exit 1;
+           fi
+          
+        elif [ $DESTINATION_BRANCH == prod ];
+         then
+           if [[ -z $(git diff $SOURCE_BRANCH_NAME origin/mock-prod) ]]; 
+           then
+             OUTPUT=$(echo "'$SOURCE_BRANCH' branch is completely merged with 'mock-prod' branch")
+             echo "::set-output name=MERGEABILITY::$OUTPUT"
+           else
+             COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/mock-prod)
+             NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/mock-prod | wc -l)
+             
+             OUTPUT="Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' are not yet merged to 'mock-prod' -
+             
+        $COMMITS"
+             
+             OUTPUT="${OUTPUT//'%'/'%25'}"
+             OUTPUT="${OUTPUT//$'\n'/'%0A'}"
+             OUTPUT="${OUTPUT//$'\r'/'%0D'}"
+                        
+             echo "::set-output name=MERGEABILITY::$OUTPUT"
+             exit 1;
+           fi
+         
+        else
+          echo "raise pull request to the correct branch"
+        fi
+      
+    - name: Update Pull Request
+      uses: actions/github-script@0.9.0
+      if: github.event_name == 'pull_request' && always()
+      env: 
+        MERGED: "{{ steps.mergeability.outputs.stdout }}"
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `#### Verify Mergeability 📖 - 
+                 ${{steps.mergeability.outputs.MERGEABILITY}}`
+            })
+          
+    
+ #   - name: verify mergeability
+ #     run: |   
+ #       SOURCE_BRANCH=origin/feature/new
+ #       CURRENT_BRANCH=${GITHUB_REF#refs/heads/}    
+ #               
+ #       MERGE_BASE="$(git merge-base $SOURCE_BRANCH $CURRENT_BRANCH)"
+ #       MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse $SOURCE_BRANCH)"
+ #       
+ #       SOURCE_BRANCH_NAME=$(echo $SOURCE_BRANCH | cut -d '/' -f2-)
+ #       
+ #       if [ "$MERGE_BASE" = "$MERGE_SOURCE_CURRENT_COMMIT" ]; 
+ #       then
+ #         echo "'$SOURCE_BRANCH_NAME' branch is merged with '$CURRENT_BRANCH'"
+ #       else
+ #         echo "'$SOURCE_BRANCH_NAME' branch is not completely merged with '$CURRENT_BRANCH'";
+ #         exit 1;
+ #       fi
+    
+
+  test:
+    if: github.ref == 'refs/heads/qa' && github.event_name == 'push' || github.event_name == 'pull_request'
+
+    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        python-version: [3.7]
+    
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v2
+    
+    - name: set up python 3.x
+      uses: actions/setup-python@v2
+      with:
+        # Semantic version range syntax or exact version of a Python version
+        python-version: '3.8' 
+    
+#    - name: set up Python ${{ matrix.python-version }}
+#      uses: actions/setup-python@v2
+#      with:
+#        python-version: ${{ matrix.python-version }}
+     
+    - name: check python version
+      run: |
+        which pip
+        which python
+        python --version
+        pip --version
+    
+    - name: cache pip
+      uses: actions/cache@v2
+      with:
+        # This path is specific to Ubuntu
+        path: ~/.cache/pip
+        # Look to see if there is a cache hit for the corresponding requirements file
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          ${{ runner.os }}-
+    
+    - name: install dependencies
+      run: |
+        python -m pip install --upgrade pip wheel
+        pip install flake8 coverage
+        pip install -r requirements.txt
+
+    - name: lint with flake8
+      run: |
+        flake8 . 
+      continue-on-error: true
+
+    #    flake8 . --count --max-line-length=150 --exit-zero --statistics
+      
+    - name: run code coverage
+      run: |
+        
+        coverage report -m
+      continue-on-error: true
+
+  
+  # This workflow contains a single job called "build"
+  build:
+#    needs: test
+#    if: always() && github.event_name == 'push'
+    needs: checkpoint
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    
+
+    env:
+      GCP_PROJECT_ID: 'playground-s-11-45f71f6e'
+      GCP_PROJECT_ID_PRD: 'xxx'
+      SERVICE_NAME: "hello-world" 
+  
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: checkout code
+      uses: actions/checkout@v2
+    
+  #  - run: echo "::set-env name=SERVICE_ACCOUNT_KEY::${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}"
+    
+    - name: set environment variable of git short sha
+      run: |
+         echo "GITHUB_SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+   #      echo "::set-env name=GITHUB_SHA_SHORT::$(git rev-parse --short HEAD)"
+   
+    - name: check branch
+      run: |
+        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+        echo ${CURRENT_BRANCH::7}
+        echo $GITHUB_SHA_SHORT
+        
+    #- name: env variables for develop branch
+    #  if: github.ref == 'refs/heads/develop'
+    #  run: |
+    #    echo ::set-env name=BRANCH_TAG::dev
+    #    
+    #- name: env variables for qa branch
+    #  if: github.ref == 'refs/heads/qa'
+    #  run: |
+    #    echo ::set-env name=BRANCH_TAG::qa
+    #    
+    #- name: env variables for mock-prod branch
+    #  if: github.ref == 'refs/heads/mock-prod'
+    #  run: |
+    #    echo ::set-env name=BRANCH_TAG::mck-prd
+    #    
+    #- name: env variables for prod branch
+    #  if: github.ref == 'refs/heads/prod'
+    #  run: |
+    #    echo ::set-env name=BRANCH_TAG::prd
+    #
+    #- name: env variables for feature branch
+    #  run: |
+    #    CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+    #    if [ `echo ${CURRENT_BRANCH::7}` == feature ];
+    #     then
+    #       FEATURE_TAG=$(echo $CURRENT_BRANCH | sed 's/\//-/')
+    #       echo ::set-env name=BRANCH_TAG::${FEATURE_TAG}
+    #     
+    #    else
+    #      echo "merge to correct branch"
+    #    fi
+        
+         
+    - name: set env variables for the environment
+      env:
+        GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        GCP_SERVICE_ACCOUNT_KEY_PRD: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY_PRD }}
+      run: |
+        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+        
+        if [ $CURRENT_BRANCH == develop ];
+         then
+          echo "BRANCH_TAG=dev" >> $GITHUB_ENV
+          echo "SERVICE_ACCOUNT_KEY="${GCP_SERVICE_ACCOUNT_KEY}"" >> $GITHUB_ENV
+          echo "PROJECT_ID=${{ env.GCP_PROJECT_ID }}" >> $GITHUB_ENV
+        
+        elif [ `echo ${CURRENT_BRANCH::7}` == feature ];
+         then
+           FEATURE_TAG=$(echo $CURRENT_BRANCH | sed 's/\//-/')
+           echo "BRANCH_TAG=${FEATURE_TAG}" >> $GITHUB_ENV
+           echo "SERVICE_ACCOUNT_KEY="${GCP_SERVICE_ACCOUNT_KEY}"" >> $GITHUB_ENV
+           echo "PROJECT_ID=${{ env.GCP_PROJECT_ID }}" >> $GITHUB_ENV
+           
+        elif [ $CURRENT_BRANCH == qa ];
+         then
+          echo "BRANCH_TAG=qa" >> $GITHUB_ENV
+          echo "SERVICE_ACCOUNT_KEY="${GCP_SERVICE_ACCOUNT_KEY}"" >> $GITHUB_ENV
+          echo "PROJECT_ID=${{ env.GCP_PROJECT_ID }}" >> $GITHUB_ENV
+          
+        elif [ $CURRENT_BRANCH == mock-prod ];
+         then
+          echo "BRANCH_TAG=mck-prd" >> $GITHUB_ENV
+          echo "SERVICE_ACCOUNT_KEY="${GCP_SERVICE_ACCOUNT_KEY}"" >> $GITHUB_ENV
+          echo "PROJECT_ID=${{ env.GCP_PROJECT_ID }}" >> $GITHUB_ENV
+          
+        elif [ $CURRENT_BRANCH == prod ];
+         then
+          echo "BRANCH_TAG=prd" >> $GITHUB_ENV
+          echo "SERVICE_ACCOUNT_KEY="${GCP_SERVICE_ACCOUNT_KEY_PRD}"" >> $GITHUB_ENV
+          echo "PROJECT_ID=${{ env.GCP_PROJECT_ID_PRD }}" >> $GITHUB_ENV
+         
+        else
+          echo "merge to correct branch"
+        fi
+        
+    - name: check branch tags
+      run: |
+        echo ${BRANCH_TAG}
+        echo ${SERVICE_ACCOUNT_KEY}
+        echo ${PROJECT_ID}
+    
+    - name: Activate Service Account 
+      run: |
+        echo "$SERVICE_ACCOUNT_KEY" > ${HOME}/gcloud.json
+        gcloud --quiet auth activate-service-account --key-file=${HOME}/gcloud.json --project=${PROJECT_ID}
+      continue-on-error: true
+ #       gcloud auth configure-docker 
+    
+    - name: check gcloud info
+      run: gcloud info
+        
+    - name: enable docker cache
+      uses: satackey/action-docker-layer-caching@v0.0.8
+      continue-on-error: true
+           
+    - name: build docker image
+      run: |
+        docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${BRANCH_TAG} \
+                     -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${BRANCH_TAG}-${GITHUB_SHA_SHORT} .
+    
+    - name: configure docker to use gcloud cli
+      run: gcloud auth configure-docker -q
+
+    - name: push docker image
+      run: |
+        docker push gcr.io/$PROJECT_ID/$SERVICE_NAME
