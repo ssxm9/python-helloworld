@@ -89,7 +89,7 @@ jobs:
        
     - name: terraform fmt
       id: fmt
-      run: terraform fmt -check -no-color
+      run: terraform fmt -no-color
       continue-on-error: true
 
     - name: terraform init
