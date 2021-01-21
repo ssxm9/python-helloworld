@@ -15,7 +15,7 @@ resource "google_bigquery_table" "table_bq" {
   table_id   = "bq_table"
   clustering = []
   time_partitioning {
-    type = "DAY"
+    type  = "DAY"
   }
 
   labels = {
