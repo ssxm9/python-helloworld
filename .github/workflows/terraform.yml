@@ -34,7 +34,7 @@ jobs:
     - name: checkout code
       uses: actions/checkout@v2
     
-    - name: setup env variables
+    - name: setup env variables on push
       if: github.event_name == 'push'
       run: |
         CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
@@ -63,7 +63,7 @@ jobs:
            echo "merge to correct branch"
         fi
         
-    - name: setup env variables for pr
+    - name: setup env variables on pull request
       if: github.event_name == 'pull_request'
       run: |
         TARGET_BRANCH=${{ github.base_ref }}
