@@ -61,6 +61,35 @@ jobs:
         else
            echo "merge to correct branch"
         fi
+        
+    - name: setup env variables for pr
+      if: github.event_name == 'pull_request'
+      run: |
+        TARGET_BRANCH=${{github.head_ref}}
+        
+        if [ $TARGET_BRANCH == develop ] || [ `echo ${TARGET_BRANCH::7}` == feature ];
+         then
+           echo "ENV=dev" >> $GITHUB_ENV
+           echo "BACKEND_BUCKET=backend-dev1" >> $GITHUB_ENV
+          
+        elif [ $TARGET_BRANCH == qa ];
+         then
+           echo "ENV=qa" >> $GITHUB_ENV
+           echo "BACKEND_BUCKET=backend-tst1" >> $GITHUB_ENV
+
+        elif [ $TARGET_BRANCH == mock-prod ];
+         then
+           echo "ENV=mck-prd" >> $GITHUB_ENV
+           echo "BACKEND_BUCKET=backend-mck1" >> $GITHUB_ENV
+
+        elif [ $TARGET_BRANCH == prod ];
+         then
+           echo "ENV=prd" >> $GITHUB_ENV
+           echo "BACKEND_BUCKET=backend-prd1" >> $GITHUB_ENV
+         
+        else
+           echo "Raise PR to the correct branch"
+        fi
    
     - name: check project id
       run: |
