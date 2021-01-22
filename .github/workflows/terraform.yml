@@ -64,6 +64,7 @@ jobs:
    
     - name: check project id
       run: |
+       echo "PR=$GITHUB_REF"
         echo "CURRENT_BRANCH=${GITHUB_REF#refs/heads/}"
         echo ${{ env.PROJECT_ID }}
         echo ${{ env.ENV }}
