@@ -7,7 +7,7 @@ on:
       - feature/**
       - develop
       - qa
-      - mock_prod
+      - mock-prod
       - prod
     paths:
       - 'terraform/**'
@@ -34,7 +34,13 @@ jobs:
     - name: checkout code
       uses: actions/checkout@v2
     
-    - name: setup env variables
+    - name: terraform apply
+      if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/qa' || github.ref == 'refs/heads/mock-prod' || github.ref == 'refs/heads/master' && github.event_name == 'push'
+      run: |
+        echo "CURRENT_BRANCH=${GITHUB_REF#refs/heads/}"
+    
+    - name: setup env variables on push
+      if: github.event_name == 'push'
       run: |
         CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
         
@@ -61,9 +67,40 @@ jobs:
         else
            echo "merge to correct branch"
         fi
+        
+    - name: setup env variables on pull request
+      if: github.event_name == 'pull_request'
+      run: |
+        TARGET_BRANCH=${{ github.base_ref }}
+        
+        if [ $TARGET_BRANCH == develop ] || [ `echo ${TARGET_BRANCH::7}` == feature ];
+         then
+           echo "ENV=dev" >> $GITHUB_ENV
+           echo "BACKEND_BUCKET=backend-dev1" >> $GITHUB_ENV
+          
+        elif [ $TARGET_BRANCH == qa ];
+         then
+           echo "ENV=qa" >> $GITHUB_ENV
+           echo "BACKEND_BUCKET=backend-tst1" >> $GITHUB_ENV
+
+        elif [ $TARGET_BRANCH == mock-prod ];
+         then
+           echo "ENV=mck-prd" >> $GITHUB_ENV
+           echo "BACKEND_BUCKET=backend-mck1" >> $GITHUB_ENV
+
+        elif [ $TARGET_BRANCH == prod ];
+         then
+           echo "ENV=prd" >> $GITHUB_ENV
+           echo "BACKEND_BUCKET=backend-prd1" >> $GITHUB_ENV
+         
+        else
+           echo "Raise PR to the correct branch"
+        fi
    
     - name: check project id
       run: |
+       echo "PR=${{github.base_ref}}"
+        echo "CURRENT_BRANCH=${GITHUB_REF#refs/heads/}"
         echo ${{ env.PROJECT_ID }}
         echo ${{ env.ENV }}
         echo ${{ env.BACKEND_BUCKET }}
@@ -177,5 +214,6 @@ jobs:
 #      run: exit 1
        
     - name: terraform apply
-      if: github.event_name == 'push'
-      run: terraform apply -auto-approve terraform.plan  
+      if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/qa' || github.ref == 'refs/heads/mock-prod' || github.ref == 'refs/heads/master' && github.event_name == 'push'
+      run: |
+       terraform apply -auto-approve terraform.plan  
