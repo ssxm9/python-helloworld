@@ -1,0 +1,90 @@
+name: Dags Deployment
+
+on:
+  push:
+    branches: [ feature/**, develop, qa, mock-prod, prod ] 
+    paths:
+      - 'dags/**'
+      - '.github/workflows/deploy.yml'
+      - 'test/**'
+
+jobs:
+  deploy:
+    name: deploy dags to airflow
+    runs-on: ubuntu-latest 
+
+    env:
+      PROJECT_ID: '***'
+      CLUSTER_NAME: '***'
+      ZONE: '***'
+
+  
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v2
+   
+    - name: check branch
+      run: |
+        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+        echo ${CURRENT_BRANCH::7}
+        
+    - name: set env variables for all environment
+      run: |
+        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+        
+        if [ $CURRENT_BRANCH == develop ] || [ `echo ${CURRENT_BRANCH::7}` == feature ];
+         then
+          echo ::set-env name=NAMESPACE::dev-ns
+          echo ::set-env name=WEB_SERVER::airflow-web
+
+        elif [ $CURRENT_BRANCH == qa ];
+         then
+          echo ::set-env name=NAMESPACE::tst-ns
+          echo ::set-env name=WEB_SERVER::airflow-web
+
+        elif [ $CURRENT_BRANCH == mock-prod ];
+         then
+          echo ::set-env name=NAMESPACE::mck-ns
+          echo ::set-env name=WEB_SERVER::airflow-web
+          
+        elif [ $CURRENT_BRANCH == prod ];
+         then
+          echo ::set-env name=NAMESPACE::prd-ns
+          echo ::set-env name=WEB_SERVER::airflow-web
+         
+        else
+          echo "merge to correct branch"
+        fi
+        
+    - name: check tags
+      run: |
+        echo "namespace is ${NAMESPACE}"
+        echo "web server is ${WEB_SERVER}"
+
+    - name: activate service account 
+      env: 
+        SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+      run: |
+        echo "$SERVICE_ACCOUNT_KEY" > ${HOME}/gcloud.json
+        gcloud --quiet auth activate-service-account --key-file=${HOME}/gcloud.json --project=$PROJECT_ID
+    
+    - name: check gcloud info
+      run: gcloud info
+           
+    - name: configure gke cluster access
+      run: |
+        gcloud --quiet container clusters get-credentials ${CLUSTER_NAME} --zone ${ZONE} --project ${PROJECT_ID}
+
+    - name: deploy dags
+      run: |
+        POD_NAME=`kubectl get pods --namespace=${NAMESPACE} --field-selector status.phase=Running | grep ${WEB_SERVER} | cut -d " " -f1`
+        echo ${POD_NAME} 
+        
+        DAGS=(./*.py)
+
+        for dag in ${DAGS[@]}; 
+        do
+          echo "${dag}"
+          kubectl cp "${dag}" --namespace=${NAMESPACE} ${POD_NAME}:/opt/airflow/dags
+        done
+    
