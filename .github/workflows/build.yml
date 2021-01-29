@@ -1,4 +1,5 @@
 
+
 # This is a basic workflow to help you get started with Actions 
 
 name: Docker Build and Push 
@@ -9,7 +10,8 @@ on:
     branches: [ master, feature/**, develop, qa, mock-prod, prod ] 
     paths:
       - 'containers/**'
-      - '.github/workflows/build.yml' 
+      - '.github/workflows/build.yml'
+      - 'test/**'
   
   pull_request:
 
@@ -21,7 +23,7 @@ defaults:
 jobs:
 
   checkpoint:
-    if: github.event_name == 'push'
+    if: github.event_name == 'pull_request'
     
     runs-on: ubuntu-latest
     
@@ -34,23 +36,131 @@ jobs:
     - name: check branch
       run: git branch
     
+    - name: step that prints name of pull request's base branch
+      run: |
+        echo "Pull request's base branch is: ${{ github.base_ref }}"
+        echo "Source branch is : ${{github.head_ref}}"
+        
     - name: verify mergeability
+      id: mergeability
       run: |   
-        SOURCE_BRANCH=origin/feature/new
-        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}        
-                
-        MERGE_BASE="$(git merge-base $SOURCE_BRANCH $CURRENT_BRANCH)"
-        MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse $SOURCE_BRANCH)"
+        SOURCE_BRANCH_NAME=origin/${{github.head_ref}}
+        DESTINATION_BRANCH_NAME=origin/${{ github.base_ref }}
         
-        SOURCE_BRANCH_NAME=$(echo $SOURCE_BRANCH | cut -d '/' -f2-)
-        
-        if [ "$MERGE_BASE" = "$MERGE_SOURCE_CURRENT_COMMIT" ]; 
-        then
-          echo "'$SOURCE_BRANCH_NAME' branch is merged with '$CURRENT_BRANCH'"
+        SOURCE_BRANCH=$(echo $SOURCE_BRANCH_NAME | cut -d '/' -f2-)
+        DESTINATION_BRANCH=$(echo $DESTINATION_BRANCH_NAME | cut -d '/' -f2-)   
+           
+        if [ $DESTINATION_BRANCH == develop ];
+         then
+           echo "PR is raised to develop branch";
+           
+        elif [ $DESTINATION_BRANCH == qa ];
+         then
+           if [[ -z $(git diff $SOURCE_BRANCH_NAME origin/develop) ]]; 
+           then
+             OUTPUT=$(echo "'$SOURCE_BRANCH' branch is completely merged with 'develop' branch")
+             echo "::set-output name=MERGEABILITY::$OUTPUT"
+           else
+             COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop)
+             NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/develop | wc -l)
+             
+             
+             OUTPUT="Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' branch are not yet merged to 'develop' branch -
+             
+        $COMMITS"
+             
+             OUTPUT="${OUTPUT//'%'/'%25'}"
+             OUTPUT="${OUTPUT//$'\n'/'%0A'}"
+             OUTPUT="${OUTPUT//$'\r'/'%0D'}"
+                                   
+             echo "::set-output name=MERGEABILITY::$OUTPUT"
+             exit 1;
+           fi
+          
+        elif [ $DESTINATION_BRANCH == mock-prod ];
+         then
+           if [[ -z $(git diff $SOURCE_BRANCH_NAME origin/qa) ]]; 
+           then
+             OUTPUT=$(echo "'$SOURCE_BRANCH' branch is completely merged with 'qa' branch")
+             echo "::set-output name=MERGEABILITY::$OUTPUT"
+           else
+             COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa)
+             NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/qa | wc -l)
+
+
+             OUTPUT="Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' branch are not yet merged to 'qa' branch -
+             
+        $COMMITS"
+             
+             OUTPUT="${OUTPUT//'%'/'%25'}"
+             OUTPUT="${OUTPUT//$'\n'/'%0A'}"
+             OUTPUT="${OUTPUT//$'\r'/'%0D'}"
+                          
+             echo "::set-output name=MERGEABILITY::$OUTPUT"
+             exit 1;
+           fi
+          
+        elif [ $DESTINATION_BRANCH == prod ];
+         then
+           if [[ -z $(git diff $SOURCE_BRANCH_NAME origin/mock-prod) ]]; 
+           then
+             OUTPUT=$(echo "'$SOURCE_BRANCH' branch is completely merged with 'mock-prod' branch")
+             echo "::set-output name=MERGEABILITY::$OUTPUT"
+           else
+             COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/mock-prod)
+             NO_OF_COMMITS=$(git log --oneline $SOURCE_BRANCH_NAME ^origin/mock-prod | wc -l)
+             
+
+             OUTPUT="Below $NO_OF_COMMITS commits of '$SOURCE_BRANCH' branch are not yet merged to 'mock-prod' branch -
+             
+        $COMMITS"
+             
+             OUTPUT="${OUTPUT//'%'/'%25'}"
+             OUTPUT="${OUTPUT//$'\n'/'%0A'}"
+             OUTPUT="${OUTPUT//$'\r'/'%0D'}"
+                        
+             echo "::set-output name=MERGEABILITY::$OUTPUT"
+             exit 1;
+           fi
+         
         else
-          echo "'$SOURCE_BRANCH_NAME' branch is not completely merged with '$CURRENT_BRANCH'";
-          exit 1;
+          echo "raise pull request to the correct branch"
         fi
+      
+    - name: Update Pull Request
+      uses: actions/github-script@0.9.0
+      if: github.event_name == 'pull_request' && always()
+      env: 
+        MERGED: "{{ steps.mergeability.outputs.stdout }}"
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `#### Verify Mergeability 📖 - 
+                 ${{steps.mergeability.outputs.MERGEABILITY}}`
+            })
+          
+    
+ #   - name: verify mergeability
+ #     run: |   
+ #       SOURCE_BRANCH=origin/feature/new
+ #       CURRENT_BRANCH=${GITHUB_REF#refs/heads/}    
+ #               
+ #       MERGE_BASE="$(git merge-base $SOURCE_BRANCH $CURRENT_BRANCH)"
+ #       MERGE_SOURCE_CURRENT_COMMIT="$(git rev-parse $SOURCE_BRANCH)"
+ #       
+ #       SOURCE_BRANCH_NAME=$(echo $SOURCE_BRANCH | cut -d '/' -f2-)
+ #       
+ #       if [ "$MERGE_BASE" = "$MERGE_SOURCE_CURRENT_COMMIT" ]; 
+ #       then
+ #         echo "'$SOURCE_BRANCH_NAME' branch is merged with '$CURRENT_BRANCH'"
+ #       else
+ #         echo "'$SOURCE_BRANCH_NAME' branch is not completely merged with '$CURRENT_BRANCH'";
+ #         exit 1;
+ #       fi
     
 
   test:
@@ -118,7 +228,7 @@ jobs:
   build:
 #    needs: test
 #    if: always() && github.event_name == 'push'
-    needs: checkpoint
+#    needs: mergeability
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     

@@ -6,6 +6,7 @@ on:
     paths:
       - 'dags/**'
       - '.github/workflows/deploy.yml'
+      - 'test/**'
 
 jobs:
   deploy:
