@@ -3,10 +3,10 @@ provider "google" {
   region  = "us-central1"
 }
 
-terraform { 
-  backend "gcs" {   
-    bucket  = "${var.backend_bucket}"
-    prefix = "${var.env}"
+#terraform { 
+#  backend "gcs" {   
+#    bucket  = "${var.backend_bucket}"
+#    prefix = "${var.env}"
 #    project = "<YOUR PROJECT ID>" 
-  }
-}
+#  }
+#}
