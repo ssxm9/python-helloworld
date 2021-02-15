@@ -23,7 +23,7 @@ defaults:
 jobs:
 
   checkpoint:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.ref == 'refs/heads/prod'
     
     runs-on: ubuntu-latest
     
@@ -166,7 +166,7 @@ jobs:
   test:
 #    if: github.ref == 'refs/heads/qa' && github.event_name == 'push' || github.event_name == 'pull_request'
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 #    strategy:
 #      matrix:
 #        python-version: [3.7]
@@ -223,7 +223,7 @@ jobs:
       with:
         name: flake8 output
         path: |
-          flake8.out
+          containers/flake8.out
              
     - name: run code coverage
       run: |
