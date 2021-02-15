@@ -213,11 +213,12 @@ jobs:
     - name: lint with flake8
       run: |
         flake8 . --count --statistics
+        flake8 . --count --show-source --statistics --output-file=flake8.out
       continue-on-error: true
     
-    - name: create flake8 output as artifact
-      run: |
-        flake8 . --count --show-source --statistics >> flake8.out
+  #  - name: create flake8 output as artifact
+  #    run: |
+  #      flake8 . --count --show-source --statistics >> flake8.out
 
     #    flake8 . --count --max-line-length=150 --exit-zero --statistics
     
