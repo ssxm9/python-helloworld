@@ -217,6 +217,11 @@ jobs:
       continue-on-error: true
 
     #    flake8 . --count --max-line-length=150 --exit-zero --statistics
+    
+    - name: check files
+      run: |
+        pwd
+        ls
       
     - name: upload flake8 output as artifact
       uses: actions/upload-artifact@v2
