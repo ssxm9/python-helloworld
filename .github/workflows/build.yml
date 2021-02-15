@@ -212,7 +212,7 @@ jobs:
 
     - name: lint with flake8
       run: |
-        flake8 . --count --statistics
+        flake8 . --statistics
       continue-on-error: true
     
     - name: create flake8 output as artifact
