@@ -164,7 +164,7 @@ jobs:
     
 
   test:
-    if: github.ref == 'refs/heads/qa' && github.event_name == 'push' || github.event_name == 'pull_request'
+#    if: github.ref == 'refs/heads/qa' && github.event_name == 'push' || github.event_name == 'pull_request'
 
     runs-on: ubuntu-latest
 #    strategy:
@@ -212,16 +212,24 @@ jobs:
 
     - name: lint with flake8
       run: |
-        flake8 . 
+        flake8 . --count --statistics
+        flake8 . --count --show-source --statistics >> flake8.out
       continue-on-error: true
 
     #    flake8 . --count --max-line-length=150 --exit-zero --statistics
       
+    - name: upload flake8 output as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: flake8 output
+        path: |
+          flake8.out
+             
     - name: run code coverage
       run: |
-        
         coverage report -m
       continue-on-error: true
+    
 
   
   # This workflow contains a single job called "build"
