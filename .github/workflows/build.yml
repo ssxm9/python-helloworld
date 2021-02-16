@@ -217,7 +217,7 @@ jobs:
     
     - name: create flake8 output as artifact
       run: |
-        flake8 . --statistics --show-source --output-file=flake8.out
+        flake8 . --show-source --output-file=flake8.out
       continue-on-error: true
 
     #    flake8 . --count --max-line-length=150 --exit-zero --statistics
