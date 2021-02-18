@@ -166,7 +166,7 @@ jobs:
   test:
     if: github.ref == 'refs/heads/qa' && github.event_name == 'push' || github.event_name == 'pull_request'
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 #    strategy:
 #      matrix:
 #        python-version: [3.7]
@@ -230,7 +230,7 @@ jobs:
 #    if: always() && github.event_name == 'push'
 #    needs: mergeability
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     
 
     env:
@@ -322,7 +322,7 @@ jobs:
           echo "SERVICE_ACCOUNT_KEY="${GCP_SERVICE_ACCOUNT_KEY}"" >> $GITHUB_ENV
           echo "PROJECT_ID=${{ env.GCP_PROJECT_ID }}" >> $GITHUB_ENV
           
-        elif [ $CURRENT_BRANCH == prod ];
+        elif [ $CURRENT_BRANCH == master ];
          then
           echo "BRANCH_TAG=prd" >> $GITHUB_ENV
           echo "SERVICE_ACCOUNT_KEY="${GCP_SERVICE_ACCOUNT_KEY_PRD}"" >> $GITHUB_ENV
@@ -362,4 +362,5 @@ jobs:
 
     - name: push docker image
       run: |
-        docker push gcr.io/$PROJECT_ID/$SERVICE_NAME
+        docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:${BRANCH_TAG}
+        docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:${BRANCH_TAG}-${GITHUB_SHA_SHORT}
