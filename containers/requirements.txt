@@ -5,3 +5,4 @@ psycopg2==2.8.5
 google-cloud-pubsub==1.6.1
 pandas-gbq==0.13.2
 google-cloud-bigquery==1.27.2
+
