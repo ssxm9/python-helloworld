@@ -3,7 +3,7 @@
         "description": "Full visitor ID",
         "mode": "NULLABLE",
         "name": "fullVisitorId",
-        "type": "STRING"
+        "type": "STRING",
         "policyTags": {
           "names": ["google_data_catalog_policy_tag.basic_policy_tag_high.id"]
         }
@@ -12,7 +12,7 @@
         "description": "Visit number",
         "mode": "NULLABLE",
         "name": "visitNumber",
-        "type": "INTEGER"
+        "type": "INTEGER",
         "policyTags": {
           "names": ["google_data_catalog_policy_tag.basic_policy_tag_low.id"]
         }
