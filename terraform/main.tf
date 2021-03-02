@@ -38,3 +38,12 @@ resource "google_data_catalog_taxonomy" "my_taxonomy" {
   description            = "A collection of policy tags"
   activated_policy_types = ["FINE_GRAINED_ACCESS_CONTROL"]
 }
+
+resource "null_resource" "tags" {
+  provisioner "local-exec" {
+    command = <<EOF
+               echo "{google_data_catalog_policy_tag.basic_policy_tag_low.id}"
+               echo "{google_data_catalog_policy_tag.basic_policy_tag_high.id}"
+    EOF
+  }
+}
