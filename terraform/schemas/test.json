@@ -4,12 +4,16 @@
         "mode": "NULLABLE",
         "name": "fullVisitorId",
         "type": "STRING"
+        "policyTags": {
+          "names": ["google_data_catalog_policy_tag.basic_policy_tag.id"]
       },
       {
         "description": "Visit number",
         "mode": "NULLABLE",
         "name": "visitNumber",
         "type": "INTEGER"
+        "policyTags": {
+          "names": ["google_data_catalog_policy_tag.basic_policy_tag.id"]
       },
       {
         "description": "Visit ID",
