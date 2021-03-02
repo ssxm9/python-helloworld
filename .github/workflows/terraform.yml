@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      PROJECT_ID: 'playground-s-11-5a7f1ada'
+      PROJECT_ID: 'playground-s-11-fa8a3cc7'
     
     steps:
     
@@ -136,7 +136,7 @@ jobs:
 
     - name: terraform init
       id: init
-      run: terraform init -no-color -backend-config "prefix=${{ env.ENV }}" -backend-config "bucket=tfb123"
+      run: terraform init -no-color -backend-config "prefix=${{ env.ENV }}" -backend-config "bucket=tfb223"
 
     - name: terraform validate
       id: validate
@@ -209,8 +209,3 @@ jobs:
         terraform apply -auto-approve terraform.plan
 #      if: steps.plan.outcome == 'failure'
 #      run: exit 1
-       
-    - name: terraform apply
-      if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/qa' || github.ref == 'refs/heads/mock-prod' || github.ref == 'refs/heads/master' && github.event_name == 'push'
-      run: |
-       terraform apply -auto-approve terraform.plan  
