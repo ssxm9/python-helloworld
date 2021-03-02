@@ -34,7 +34,7 @@ resource "google_data_catalog_policy_tag" "basic_policy_tag_low" {
 resource "google_data_catalog_taxonomy" "my_taxonomy" {
   provider               = google-beta
   region                 = "us"
-  display_name           = "test-taxonomy"
+  display_name           = "test_taxonomy"
   description            = "A collection of policy tags"
   activated_policy_types = ["FINE_GRAINED_ACCESS_CONTROL"]
 }
