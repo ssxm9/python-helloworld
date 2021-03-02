@@ -27,17 +27,12 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      PROJECT_ID: 'playground-s-11-d58b69fb'
+      PROJECT_ID: 'playground-s-11-5a7f1ada'
     
     steps:
     
     - name: checkout code
       uses: actions/checkout@v2
-    
-    - name: terraform apply
-      if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/qa' || github.ref == 'refs/heads/mock-prod' || github.ref == 'refs/heads/master' && github.event_name == 'push'
-      run: |
-        echo "CURRENT_BRANCH=${GITHUB_REF#refs/heads/}"
     
     - name: setup env variables on push
       if: github.event_name == 'push'
@@ -141,7 +136,7 @@ jobs:
 
     - name: terraform init
       id: init
-      run: terraform init -no-color -backend-config "prefix=${{ env.ENV }}" -backend-config "bucket=${{ env.BACKEND_BUCKET }}"
+      run: terraform init -no-color
 
     - name: terraform validate
       id: validate
@@ -209,7 +204,9 @@ jobs:
              body: output
           })
 
-#    - name: terraform plan status
+    - name: terraform apply
+      run: |
+        terraform apply -auto-approve terraform.plan
 #      if: steps.plan.outcome == 'failure'
 #      run: exit 1
        
