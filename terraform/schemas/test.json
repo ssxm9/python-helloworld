@@ -5,7 +5,7 @@
         "name": "fullVisitorId",
         "type": "STRING",
         "policyTags": {
-          "names": ["google_data_catalog_policy_tag.basic_policy_tag_high.id"]
+          "names": ["projects/{var.project_id}/locations/{google_data_catalog_taxonomy.my_taxonomy.region}/taxonomies/{google_data_catalog_taxonomy.my_taxonomy.id}/policyTags/{google_data_catalog_policy_tag.basic_policy_tag_high.id}"]
         }
       },
       {
@@ -14,7 +14,7 @@
         "name": "visitNumber",
         "type": "INTEGER",
         "policyTags": {
-          "names": ["google_data_catalog_policy_tag.basic_policy_tag_low.id"]
+          "names": ["projects/{var.project_id}/locations/{google_data_catalog_taxonomy.my_taxonomy.region}/taxonomies/{google_data_catalog_taxonomy.my_taxonomy.id}/policyTags/{google_data_catalog_policy_tag.basic_policy_tag_low.id}"]
         }
       },
       {
