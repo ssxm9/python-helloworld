@@ -1,8 +1,8 @@
 resource "google_bigquery_dataset" "dataset" {
-  dataset_id    = "example_dataset" 
+  dataset_id    = "example_dataset"
   friendly_name = "test"
   description   = "This is a test description"
-  location      = "US" 
+  location      = "US"
 
   labels = {
     env = var.env
@@ -11,7 +11,7 @@ resource "google_bigquery_dataset" "dataset" {
 
 resource "google_bigquery_table" "table" {
   dataset_id = google_bigquery_dataset.dataset.dataset_id
-  table_id   = "bq_table" 
+  table_id   = "bq_table"
 
   time_partitioning {
     type = "DAY"

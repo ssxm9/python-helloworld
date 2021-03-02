@@ -5,7 +5,7 @@
         "name": "fullVisitorId",
         "type": "STRING"
         "policyTags": {
-          "names": ["google_data_catalog_policy_tag.basic_policy_tag.id"]
+          "names": ["google_data_catalog_policy_tag.basic_policy_tag_high.id"]
       },
       {
         "description": "Visit number",
@@ -13,7 +13,7 @@
         "name": "visitNumber",
         "type": "INTEGER"
         "policyTags": {
-          "names": ["google_data_catalog_policy_tag.basic_policy_tag.id"]
+          "names": ["google_data_catalog_policy_tag.basic_policy_tag_low.id"]
       },
       {
         "description": "Visit ID",

@@ -11,17 +11,24 @@ provider "google" {
 #  }
 #}
 
-resource "google_data_catalog_policy_tag" "basic_policy_tag" {
-  provider = google-beta
-  taxonomy = google_data_catalog_taxonomy.my_taxonomy.id
-  display_name = "Low security"
-  description = "A policy tag normally associated with low security items"
+resource "google_data_catalog_policy_tag" "basic_policy_tag_high" {
+  provider     = google-beta
+  taxonomy     = google_data_catalog_taxonomy.my_taxonomy.id
+  display_name = "High"
+  description  = "A policy tag for high security items"
+}
+
+resource "google_data_catalog_policy_tag" "basic_policy_tag_low" {
+  provider     = google-beta
+  taxonomy     = google_data_catalog_taxonomy.my_taxonomy.id
+  display_name = "Low"
+  description  = "A policy tag for low security items"
 }
 
 resource "google_data_catalog_taxonomy" "my_taxonomy" {
-  provider = google-beta
-  region = "us"
-  display_name =  "taxonomy_display_name"
-  description = "A collection of policy tags"
+  provider               = google-beta
+  region                 = "us"
+  display_name           = "test-taxonomy"
+  description            = "A collection of policy tags"
   activated_policy_types = ["FINE_GRAINED_ACCESS_CONTROL"]
 }
