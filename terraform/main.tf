@@ -9,13 +9,13 @@ module "bigquery" {
   dataset_id = google_bigquery_dataset.dataset.dataset_id
 }
 
-#terraform { 
-#  backend "gcs" {   
-#    bucket  = "${var.backend_bucket}"
-#    prefix = "${var.env}"
+terraform { 
+  backend "gcs" {   
+    bucket  = "${var.backend_bucket}"
+    prefix = "${var.env}"
 #    project = "<YOUR PROJECT ID>" 
-#  }
-#}
+  }
+}
 
 resource "google_data_catalog_policy_tag" "basic_policy_tag_high" {
   provider     = google-beta

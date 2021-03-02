@@ -136,7 +136,7 @@ jobs:
 
     - name: terraform init
       id: init
-      run: terraform init -no-color
+      run: terraform init -no-color -backend-config "prefix=${{ env.ENV }}" -backend-config "bucket=tfb123"
 
     - name: terraform validate
       id: validate
