@@ -41,7 +41,7 @@ resource "google_data_catalog_taxonomy" "my_taxonomy" {
 
 resource "null_resource" "tags" {
   provisioner "local-exec" {
-    command = echo "${google_data_catalog_policy_tag.basic_policy_tag_low.id}"
+    command = "echo ${google_data_catalog_policy_tag.basic_policy_tag_low.id}"
   }
-  depends_on = ["google_data_catalog_policy_tag.basic_policy_tag_low"]
+  depends_on = [google_data_catalog_policy_tag.basic_policy_tag_low]
 }
