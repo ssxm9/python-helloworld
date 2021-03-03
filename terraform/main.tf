@@ -3,11 +3,11 @@ provider "google" {
   region  = "us-central1"
 }
 
-#module "bigquery" {
-#  source     = "./modules/bigquery"
-#  project_id = var.project_id
-#  dataset_id = google_bigquery_dataset.dataset.dataset_id
-#}
+module "bigquery" {
+  source     = "./modules/bigquery"
+  project_id = var.project_id
+  dataset_id = google_bigquery_dataset.dataset.dataset_id
+}
 
 terraform { 
   backend "gcs" {   
