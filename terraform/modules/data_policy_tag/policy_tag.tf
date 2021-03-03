@@ -22,11 +22,9 @@ resource "google_data_catalog_taxonomy" "my_taxonomy" {
 
 resource "google_data_catalog_policy_tag_iam_binding" "binding" {
   provider   = google-beta
-  policy_tag = google_data_catalog_policy_tag.basic_policy_tag_high
+  policy_tag = google_data_catalog_policy_tag.basic_policy_tag_high.name
   role       = "roles/datacatalog.policyTagFineGrainedReader"
-  members = [
-    "user:jane@example.com"
-  ]
+  member     = "user:jane@example.com"
 }
 
 output "google_data_catalog_policy_tag_high" {
