@@ -13,11 +13,11 @@ module "bigquery" {
   dataset_id = google_bigquery_dataset.dataset.dataset_id
 }
 
-terraform { 
-  backend "gcs" {   
-    bucket  = "${var.backend_bucket}"
+terraform {
+  backend "gcs" {
+    bucket = "${var.backend_bucket}"
     prefix = "${var.env}"
-#    project = "<YOUR PROJECT ID>" 
+    #    project = "<YOUR PROJECT ID>" 
   }
 }
 
