@@ -5,7 +5,7 @@
         "name": "fullVisitorId",
         "type": "STRING",
         "policyTags": {
-          "names": ["echo ${google_data_catalog_policy_tag.basic_policy_tag_high.id}"]
+          "names": ["${google_data_catalog_policy_tag.basic_policy_tag_high.id}"]
         }
       },
       {
