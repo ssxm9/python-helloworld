@@ -3,9 +3,9 @@ provider "google" {
   region  = "us-central1"
 }
 
-module "policy_tag" {
-  source   = "./modules/data_policy_tag"
-}
+#module "policy_tag" {
+#  source   = "./modules/data_policy_tag"
+#}
 
 module "bigquery" {
   source     = "./modules/bigquery"
