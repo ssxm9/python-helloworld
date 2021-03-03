@@ -141,6 +141,9 @@ jobs:
     - name: terraform validate
       id: validate
       run: terraform validate -no-color
+    
+    - name: terraform destroy
+      run: terraform destroy --auto-approve
 
     - name: terraform plan
       id: plan
