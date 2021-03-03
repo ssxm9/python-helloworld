@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      PROJECT_ID: 'playground-s-11-fa8a3cc7'
+      PROJECT_ID: 'playground-s-11-13f6ddcd'
     
     steps:
     
@@ -136,7 +136,7 @@ jobs:
 
     - name: terraform init
       id: init
-      run: terraform init -no-color -backend-config "prefix=${{ env.ENV }}" -backend-config "bucket=tfb223"
+      run: terraform init -no-color -backend-config "prefix=${{ env.ENV }}" -backend-config "bucket=tfb2234"
 
     - name: terraform validate
       id: validate
