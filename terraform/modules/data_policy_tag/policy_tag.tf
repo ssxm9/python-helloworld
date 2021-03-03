@@ -23,7 +23,7 @@ resource "google_data_catalog_taxonomy" "my_taxonomy" {
 resource "google_data_catalog_policy_tag_iam_member" "member" {
   provider   = google-beta
   policy_tag = google_data_catalog_policy_tag.basic_policy_tag_high.name
-  role       = "roles/datacatalog.policyTagFineGrainedReader"
+  role       = "roles/datacatalog.categoryFineGrainedReader"
   member     = "user:jane@example.com"
 }
 
