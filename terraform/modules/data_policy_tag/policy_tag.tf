@@ -20,6 +20,14 @@ resource "google_data_catalog_taxonomy" "my_taxonomy" {
   activated_policy_types = ["FINE_GRAINED_ACCESS_CONTROL"]
 }
 
+resource "google_data_catalog_policy_tag_iam_binding" "binding" {
+  policy_tag = google_data_catalog_policy_tag.basic_policy_tag_high
+  role = "roles/datacatalog.policyTagFineGrainedReader"
+  members = [
+    "user:jane@example.com"
+  ]
+}
+
 output "google_data_catalog_policy_tag_high" {
   value = google_data_catalog_policy_tag.basic_policy_tag_high.id
 }
