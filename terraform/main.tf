@@ -3,11 +3,11 @@ provider "google" {
   region  = "us-central1"
 }
 
-module "bigquery" {
-  source     = "./modules/bigquery"
-  project_id = var.project_id
-  dataset_id = google_bigquery_dataset.dataset.dataset_id
-}
+#module "bigquery" {
+#  source     = "./modules/bigquery"
+#  project_id = var.project_id
+#  dataset_id = google_bigquery_dataset.dataset.dataset_id
+#}
 
 terraform { 
   backend "gcs" {   
@@ -41,9 +41,7 @@ resource "google_data_catalog_taxonomy" "my_taxonomy" {
 
 resource "null_resource" "tags" {
   provisioner "local-exec" {
-    command = <<EOF
-               echo "{google_data_catalog_policy_tag.basic_policy_tag_low.id}"
-               echo "{google_data_catalog_policy_tag.basic_policy_tag_high.id}"
-    EOF
+    command = echo "${google_data_catalog_policy_tag.basic_policy_tag_low.id}"
   }
+  depends_on = ["google_data_catalog_policy_tag.basic_policy_tag_low"]
 }
