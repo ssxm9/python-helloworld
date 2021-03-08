@@ -27,17 +27,12 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      PROJECT_ID: 'playground-s-11-d58b69fb'
+      PROJECT_ID: 'playground-s-11-d2eef79f'
     
     steps:
     
     - name: checkout code
       uses: actions/checkout@v2
-    
-    - name: terraform apply
-      if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/qa' || github.ref == 'refs/heads/mock-prod' || github.ref == 'refs/heads/master' && github.event_name == 'push'
-      run: |
-        echo "CURRENT_BRANCH=${GITHUB_REF#refs/heads/}"
     
     - name: setup env variables on push
       if: github.event_name == 'push'
@@ -76,7 +71,7 @@ jobs:
         if [ $TARGET_BRANCH == develop ] || [ `echo ${TARGET_BRANCH::7}` == feature ];
          then
            echo "ENV=dev" >> $GITHUB_ENV
-           echo "BACKEND_BUCKET=backend-dev1" >> $GITHUB_ENV
+           echo "BACKEND_BUCKET=test223" >> $GITHUB_ENV
           
         elif [ $TARGET_BRANCH == qa ];
          then
@@ -213,7 +208,11 @@ jobs:
 #      if: steps.plan.outcome == 'failure'
 #      run: exit 1
        
+#    - name: terraform apply
+#      if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/qa' || github.ref == 'refs/heads/mock-prod' || github.ref == 'refs/heads/master' && github.event_name == 'push'
+#      run: |
+#       terraform apply -auto-approve terraform.plan  
+
     - name: terraform apply
-      if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/qa' || github.ref == 'refs/heads/mock-prod' || github.ref == 'refs/heads/master' && github.event_name == 'push'
       run: |
        terraform apply -auto-approve terraform.plan  
