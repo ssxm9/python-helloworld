@@ -133,16 +133,16 @@ jobs:
       id: fmt
       run: terraform fmt -no-color -check -recursive .
       continue-on-error: true
+      
+    - name: terraform init
+      id: init
+      run: terraform init -no-color -backend-config "prefix=${{ env.ENV }}" -backend-config "bucket=${{ env.BACKEND_BUCKET }}"
     
     - name: terrraform list state
       run: terraform state list
       
     - name: terraform pull state
       run: terraform pull state > default.state
-
-    - name: terraform init
-      id: init
-      run: terraform init -no-color -backend-config "prefix=${{ env.ENV }}" -backend-config "bucket=${{ env.BACKEND_BUCKET }}"
 
     - name: terraform validate
       id: validate
