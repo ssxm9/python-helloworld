@@ -42,7 +42,7 @@ jobs:
         if [ $CURRENT_BRANCH == develop ] || [ `echo ${CURRENT_BRANCH::7}` == feature ];
          then
            echo "ENV=dev" >> $GITHUB_ENV
-           echo "BACKEND_BUCKET=test-4441" >> $GITHUB_ENV
+           echo "BACKEND_BUCKET=playground-s-11-66903f2f-test-334" >> $GITHUB_ENV
           
         elif [ $CURRENT_BRANCH == qa ];
          then
