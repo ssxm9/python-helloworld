@@ -147,7 +147,7 @@ jobs:
     - name: check files
       run: |
          ls
-         ls terraform/
+         cat default.tfstate
 
     - name: terraform validate
       id: validate
