@@ -142,7 +142,12 @@ jobs:
       run: terraform state list
       
     - name: terraform pull state
-      run: terraform pull state > default.state
+      run: terraform state pull > default.tfstate
+      
+    - name: check files
+      run: |
+         ls
+         ls terraform/
 
     - name: terraform validate
       id: validate
