@@ -151,7 +151,7 @@ jobs:
          
     - name: push tfstate
       run: |
-        echo "yes" | terraform init -no-color -input=true -lock=false -backend-config "prefix=${{ env.ENV }}" -backend-config "bucket=test-444"
+        echo "yes" | terraform init -no-color TF_INPUT="true" -lock=false -backend-config "prefix=${{ env.ENV }}" -backend-config "bucket=test-444"
 #        terraform state push default.tfstate
 
     - name: terraform validate
