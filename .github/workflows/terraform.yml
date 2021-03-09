@@ -42,7 +42,7 @@ jobs:
         if [ $CURRENT_BRANCH == develop ] || [ `echo ${CURRENT_BRANCH::7}` == feature ];
          then
            echo "ENV=dev" >> $GITHUB_ENV
-           echo "BACKEND_BUCKET=test-334" >> $GITHUB_ENV
+           echo "BACKEND_BUCKET=test-444" >> $GITHUB_ENV
           
         elif [ $CURRENT_BRANCH == qa ];
          then
@@ -138,20 +138,20 @@ jobs:
       id: init
       run: terraform init -no-color -backend-config "prefix=${{ env.ENV }}" -backend-config "bucket=${{ env.BACKEND_BUCKET }}"
     
-    - name: terrraform list state
-      run: terraform state list
+#    - name: terrraform list state
+#      run: terraform state list
       
-    - name: terraform pull state
-      run: terraform state pull > default.tfstate
+#    - name: terraform pull state
+#      run: terraform state pull > default.tfstate
       
     - name: check files
       run: |
          ls
-         cat default.tfstate
+#         cat default.tfstate
          
-    - name: push tfstate
-      run: |
-         terraform init -no-color -force-copy -lock=false -backend-config "prefix=${{ env.ENV }}" -backend-config "bucket=test-444"
+#    - name: push tfstate
+#      run: |
+#         terraform init -no-color -force-copy -lock=false -backend-config "prefix=${{ env.ENV }}" -backend-config "bucket=test-444"
 #        terraform state push default.tfstate
 
     - name: terraform validate
