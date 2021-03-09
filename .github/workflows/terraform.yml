@@ -133,6 +133,12 @@ jobs:
       id: fmt
       run: terraform fmt -no-color -check -recursive .
       continue-on-error: true
+    
+    - name: terrraform list state
+      run: terraform state list
+      
+    - name: terraform pull state
+      run: terraform pull state > default.state
 
     - name: terraform init
       id: init
