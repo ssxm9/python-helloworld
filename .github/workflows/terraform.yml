@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      PROJECT_ID: 'playground-s-11-66903f2f'
+      PROJECT_ID: 'playground-s-11-526e221b'
     
     steps:
     
@@ -136,7 +136,7 @@ jobs:
       
     - name: terraform init
       id: init
-      run: terraform init -no-color -backend-config "prefix=${{ env.ENV }}" -backend-config "bucket=${{ env.BACKEND_BUCKET }}"
+      run: terraform init -no-color
     
 #    - name: terrraform list state
 #      run: terraform state list
