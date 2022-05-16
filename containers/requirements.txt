@@ -1,5 +1,5 @@
 pandas==1.1.1
-numpy==1.19.1
+numpy==1.21.0
 joblib==0.16.0
 psycopg2==2.8.5
 google-cloud-pubsub==1.6.1
